@@ -6,8 +6,8 @@
   "dependencies": {
     "bluebird": "^2.10.2",
     "config": "^1.16.0",
-    "mssql": "^2.3.1",
-    "request": "^2.65.0"
+    "request": "^2.65.0",
+    "seriate": "^0.5.3"
   },
   "devDependencies": {},
   "scripts": {
