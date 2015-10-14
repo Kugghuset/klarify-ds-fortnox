@@ -5,6 +5,7 @@
   "main": "server/app.js",
   "dependencies": {
     "bluebird": "^2.10.2",
+    "express": "^4.13.3",
     "request": "^2.65.0",
     "seriate": "^0.5.3"
   },
