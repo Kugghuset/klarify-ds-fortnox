@@ -35,7 +35,7 @@ Note: changes to this file won't be commited as it is in the `.gitignore` file.
 
 Here's how I've set mine up:
 
-```
+```javascript
 'use strict'
 
 module.exports = {
