@@ -24,7 +24,13 @@ Install the packages.
 npm install
 ```
 
-Lastly update the `userConfig.js` file to match your setup.
+To ensure changes to `userConfig.js` doesn't sneak into the repository, run: 
+
+```
+git update-index --assume-unchanged userConfig.js
+```
+
+Lastly update `userConfig.js` file to match your setup.
 Note: changes to this file won't be commited as it is in the `.gitignore` file.
 
 Here's how I've set mine up:
