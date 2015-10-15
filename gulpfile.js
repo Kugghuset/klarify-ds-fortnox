@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 var spawn = require('child_process').spawn;
+var exec = require('child_process').exec;
 
 var node; // Will be the node command.
 
@@ -17,6 +18,17 @@ gulp.task('server', function () {
   node.on('close', function (code) {
     if (code === 8) {
       gulp.log('Error detected, waiting for changes...');
+    }
+  });
+});
+
+// Write testing for gulp
+gulp.task('test', function (cb) {
+  exec('npm test', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    if (typeof cb === 'function') {
+      cb(err);
     }
   });
 });

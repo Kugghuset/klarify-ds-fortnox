@@ -1,6 +1,8 @@
 # klarify-ds-fortnox 
 
-### Setting up the projecet
+[![Build Status](https://travis-ci.org/Kugghuset/klarify-ds-fortnox.svg)](https://travis-ci.org/Kugghuset/klarify-ds-fortnox)
+
+### Setting up the project
 
 The project runs on [Node.js](https://nodejs.org/en/), and is written in JavaScript. The database type is Microsoft SQL.
 
@@ -12,10 +14,10 @@ Clone the repository using Git (if you don't have Git on your computer, [here's 
 git clone git@github.com:Kugghuset/klarify-ds-fortnox.git
 ```
 
-If you don't have [Gulp](http://gulpjs.com/) or [Express](http://expressjs.com/), install them via npm, using the `-g` flag (meanings it's a global install).
+If you don't have [Gulp](http://gulpjs.com/), [Express](http://expressjs.com/) or [Mocha](http://mochajs.org/), install them via npm, using the `-g` flag (meanings it's a global install).
 
 ```
-npm install -g gulp express
+npm install -g gulp express mocha
 ```
 
 Install the packages.
@@ -57,4 +59,27 @@ When the server is up and running, assuming you're done setting up, simply run:
 
 ```
 gulp
+```
+
+---
+
+### Testing
+
+Tests are written in [Mocha](http://mochajs.org/), and uses [unit.js](http://unitjs.com/) (which allows for testing in a couple of different framworks).
+
+The testing suite can be run either via Mocha itself, npm or gulp. I advice to use `npm test` as it's colorized and runs from everywhere.
+
+**Mocha:** From the root folder, run:
+```
+mocha test
+```
+
+**npm:** from anywhere in the project, run:
+```
+npm test
+```
+
+**gulp:** (_no colors_) from anywhere in the project, run:
+```
+gulp test
 ```
