@@ -15,11 +15,12 @@
     "unit.js": "^2.0.0"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha"
+    "test": "mocha ./test/test.js"
   },
   "repository": {
     "type": "git",
-    "test": "mocha test"
+    "url": "https://github.com/Kugghuset/klarify-ds-fortnox",
+    "test": "npm test"
   },
   "keywords": [
     "fortnox",
