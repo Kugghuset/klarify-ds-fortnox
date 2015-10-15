@@ -1,6 +1,8 @@
 # klarify-ds-fortnox 
 
-### Setting up the projecet
+[![Build Status](https://travis-ci.org/Kugghuset/klarify-ds-fortnox.svg)](https://travis-ci.org/Kugghuset/klarify-ds-fortnox)
+
+### Setting up the project
 
 The project runs on [Node.js](https://nodejs.org/en/), and is written in JavaScript. The database type is Microsoft SQL.
 
