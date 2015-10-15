@@ -8,12 +8,10 @@ if (!userConfig) {
   userConfig = {};
 }
 
-console.log(userConfig);
-
 module.exports = {
   db: {
     user: process.env.dbUser || userConfig.dbUser || 'sa',
-    passwor: process.env.dbPass || userConfig.dbPass || 'pass',
+    password: process.env.dbPass || userConfig.dbPass || 'pass',
     server: process.env.dbServer || userConfig.dbServer || 'localhost',
     database: process.env.dbName || userConfig.dbName || 'master'
   }
