@@ -8,9 +8,9 @@ var Promise = require('bluebird');
  * Runs the init script for the model,
  * adding the table to the SQL database if it's non-existent.
  * 
- * @return {Promise}
+ * @return {Promise} -> undefined
  */
-exports.initializeCustomerTable = function () {
+exports.initializeTable = function () {
   return new Promise(function (resolve, reject) {
     sql.execute({
       query: sql.fromFile('./sql/customer.initialize.sql')
@@ -48,4 +48,71 @@ exports.getFullCustomers = function (limit) {
       reject(err);
     });
   });
-}
+};
+
+/**
+ * 
+ * 
+ * @param {Object} customer
+ * @return {Promise} -> undefined
+ */
+exports.insertOne = function (customer) {
+  return new Promise(function (resolve, reject) {
+    if (!customer || typeof customer !== 'object') {
+      // return early if no customer is present.
+      return reject(new Error('No customer present.'))
+    }
+    
+    sql.execute({
+      query: sql.fromFile('./sql/customer.insertOne.sql'),
+      params: {
+        url: {
+          type: sql.NVARCHAR,
+          val: customer['@url']
+        },
+        address1: {
+          type: sql.NVARCHAR(1024),
+          val: customer.Address1
+        },
+        address2: {
+          type: sql.NVARCHAR(1024),
+          val: customer.Address2
+        },
+        city: {
+          type: sql.NVARCHAR(1024),
+          val: customer.City
+        },
+        customerNumber: {
+          type: sql.NVARCHAR(1024),
+          val: customer.CustomerNumber
+        },
+        email: {
+          type: sql.NVARCHAR(1024),
+          val: customer.Email
+        },
+        name: {
+          type: sql.NVARCHAR(1024),
+          val: customer.Name
+        },
+        organisationNumber: {
+          type: sql.NVARCHAR(30),
+          val: customer.OrganisationNumber
+        },
+        phone: {
+          type: sql.NVARCHAR(1024),
+          val: customer.Phone
+        },
+        zipCode: {
+          type: sql.NVARCHAR(10),
+          val: customer.ZipCode
+        }
+      }
+    })
+    .then(function (result) {
+      resolve(result);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+};
