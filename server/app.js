@@ -20,10 +20,18 @@ sql.setDefaultConfig(dbConfig);
 
 // Do stuff...
 
-customer.initializeCustomerTable()
-.then(function (value) {
-  console.log(value);
-})
-.catch(function (err) {
-  console.log(err);
-});
+// customer.initializeCustomerTable()
+// .then(function (value) {
+//   console.log(value);
+  
+//   customer.getFullCustomers()
+//   .then(function (val) {
+//     console.log(val);
+//   }).cath(function (err) {
+//     console.log(err);
+//   })
+  
+// })
+// .catch(function (err) {
+//   console.log(err);
+// });

@@ -44,7 +44,7 @@ module.exports = {
   dbUser: 'sa', // database user
   dbPass: 'pass', // database password
   dbServer: 'EASTGROVESOFTWA\\LOCALSQL', // database server
-  dbName: 'dbName' // name of database
+  dbName: 'master' // name of database
 };
 ```
 
