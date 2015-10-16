@@ -51,7 +51,8 @@ exports.getFullCustomers = function (limit) {
 };
 
 /**
- * 
+ * Inserts a new row in the Customer table.
+ * If no *customer* is non-existent or not
  * 
  * @param {Object} customer
  * @return {Promise} -> undefined
@@ -60,7 +61,7 @@ exports.insertOne = function (customer) {
   return new Promise(function (resolve, reject) {
     if (!customer || typeof customer !== 'object') {
       // return early if no customer is present.
-      return reject(new Error('No customer present.'))
+      return reject(new TypeError('Customer must be of type "object"'));
     }
     
     sql.execute({
@@ -116,3 +117,61 @@ exports.insertOne = function (customer) {
     });
   });
 };
+
+/**
+ * Inserts one or many customers into the Customer table.
+ * 
+ * @param {Array} customers ([Customer])
+ * @return {Promise} -> undefined
+ */
+exports.insertMany = function insertMany(customers) {
+  return new Promise(function (resolve, reject) {
+    
+    // Ensure there's anything to put in.
+    if (!Array.isArray(customers)) {
+      // return early if customers are non-existant
+      return reject(new TypeError('customers must be of type Array'))
+    } else if (customers.length < 1) {
+      // Nothing to input
+      return resolve(undefined);
+    }
+    
+    var customerInserts = _.map(customers, function (customer) {
+      
+      /**
+       * Iterate over the properties of customer 
+       * and return either the value or '""' as a string.
+       */
+      var valuesArray = _.map(customer, function (value) {
+        // Return value  (or empty string) wrapped in single quotes.
+        return "'" + (value || "") + "'";
+      });
+      
+      // Join and return all values
+      return '(' + valuesArray.join(',') + ')';
+    }).join(', ');
+    
+    if (!customerInserts) {
+      return reject(new Error('No customers to input.'))
+    }
+    
+    /**
+    * Generate the query by replacing '{{ query_placehodler }}'
+    * in the SQL file with the actual values.
+    */
+    var insertQuery = sql
+      .fromFile('./sql/customer.insertMany.sql')
+      .replace('{{ query_placeholder }}', customerInserts);
+    
+    sql.execute({
+      query: insertQuery
+    })
+    .then(function (result) {
+      resolve(result);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  
+  });
+}
