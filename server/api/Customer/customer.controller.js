@@ -63,7 +63,7 @@ exports.insertOne = function (customer) {
       // return early if no customer is present.
       return reject(new TypeError('Customer must be of type "object"'));
     }
-    
+
     sql.execute({
       query: sql.fromFile('./sql/customer.insertOne.sql'),
       params: {
@@ -136,24 +136,72 @@ exports.insertMany = function insertMany(customers) {
       return resolve(undefined);
     }
     
-    var customerInserts = _.map(customers, function (customer) {
-      
-      /**
-       * Iterate over the properties of customer 
-       * and return either the value or '""' as a string.
-       */
-      var valuesArray = _.map(customer, function (value) {
-        // Return value  (or empty string) wrapped in single quotes.
-        return "'" + (value || "") + "'";
-      });
-      
-      // Join and return all values
-      return '(' + valuesArray.join(',') + ')';
+    /**
+     * Map over *customers* and return a sort of
+     * prepared statement for every customer.
+     * Sort of.
+     */
+    var customerParamStr = _.map(customers, function (customer, i) {
+      return '(' 
+      + [ '@url' + i
+        , '@address1' + i
+        , '@address2' + i
+        , '@city' + i
+        , '@customerNumber' + i
+        , '@email' + i
+        , '@name' + i
+        , '@organisationNumber' + i
+        , '@phone' + i
+        , '@zipCode' + i
+      ].join(', ')
+      + ')';
     }).join(', ');
+
+    var customerParamObj = {};
     
-    if (!customerInserts) {
-      return reject(new Error('No customers to input.'))
-    }
+    // _.map is used over a for loop, as it behaves sort of like a for loop and a foreach loop at ones.
+    _.map(customers, function (customer, i) {
+      customerParamObj['url' + i] = {
+        type: sql.NVARCHAR,
+        val: customer['@url']
+      };
+      customerParamObj['address1' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.Address1
+      };
+      customerParamObj['address2' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.Address2
+      };
+      customerParamObj['city' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.City
+      };
+      customerParamObj['customerNumber' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.CustomerNumber
+      };
+      customerParamObj['email' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.Email
+      };
+      customerParamObj['name' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.Name
+      };
+      customerParamObj['organisationNumber' + i] = {
+        type: sql.NVARCHAR(30),
+        val: customer.OrganisationNumber
+      };
+      customerParamObj['phone' + i] = {
+        type: sql.NVARCHAR(1024),
+        val: customer.Phone
+      };
+      customerParamObj['zipCode' + i] = {
+        type: sql.NVARCHAR(10),
+        val: customer.ZipCode
+      };
+    });
     
     /**
     * Generate the query by replacing '{{ query_placehodler }}'
@@ -161,10 +209,11 @@ exports.insertMany = function insertMany(customers) {
     */
     var insertQuery = sql
       .fromFile('./sql/customer.insertMany.sql')
-      .replace('{{ query_placeholder }}', customerInserts);
-    
+      .replace('{{ query_placeholder }}', customerParamStr);
+
     sql.execute({
-      query: insertQuery
+      query: insertQuery,
+      params: customerParamObj
     })
     .then(function (result) {
       resolve(result);
@@ -172,6 +221,10 @@ exports.insertMany = function insertMany(customers) {
     .catch(function (err) {
       reject(err);
     });
-  
   });
+};
+
+
+exports.removeCustomers = function (params) {
+
 }
