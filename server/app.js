@@ -2,7 +2,7 @@
 
 var sql = require('seriate');
 var config = require('./config/environment/development');
-var customer = require('./api/Customer/customer.controller');
+var customer = require('./api/Customer/customer');
 
 var dbConfig = {
   "server": config.db.server,
@@ -17,3 +17,4 @@ var dbConfig = {
 sql.setDefaultConfig(dbConfig);
 
 // Do stuff...
+
