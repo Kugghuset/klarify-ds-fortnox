@@ -30,7 +30,7 @@ exports.initializeTable = function () {
  * @param {Number} limit - optional,  1 <= limit <= 9223372036854775295.
  * @return {Promise} -> {[Customer]}
  */
-exports.getFullCustomers = function (limit) {
+exports.getCustomers = function (limit) {
   return new Promise(function (resolve, reject) {
     sql.execute({
       query: sql.fromFile('./sql/customer.getFull.sql'),
@@ -139,7 +139,6 @@ exports.insertMany = function insertMany(customers) {
     /**
      * Map over *customers* and return a sort of
      * prepared statement for every customer.
-     * Sort of.
      */
     var customerParamStr = _.map(customers, function (customer, i) {
       return '(' 
@@ -228,3 +227,22 @@ exports.insertMany = function insertMany(customers) {
 exports.removeCustomers = function (params) {
 
 }
+
+/**
+ * Drops the Customer table.
+ * 
+ * Should really never be used?
+ */
+exports.drop = function () {
+  return new Promise(function (resolve, reject) {
+    sql.execute({
+      query: sql.fromFile('./sql/customer.drop.sql')
+    })
+    .then(function (result) {
+      resolve(result);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+};
