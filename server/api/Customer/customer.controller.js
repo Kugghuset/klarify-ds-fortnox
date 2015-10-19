@@ -253,6 +253,7 @@ exports.disable = function (customerID) {
  * Drops the Customer table.
  * 
  * Should really never be used?
+ * @return {Promise} -> undefined
  */
 exports.drop = function () {
   return new Promise(function (resolve, reject) {
