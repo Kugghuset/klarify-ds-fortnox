@@ -1,6 +1,7 @@
 'use strict'
 
 var _ = require('lodash');
+var Promise = require('bluebird');
 var request = require('request');
 var config = require('../../config/environment/development');
 
