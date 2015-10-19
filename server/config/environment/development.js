@@ -18,9 +18,9 @@ module.exports = {
   headers: {
     standard: {
       'Access-Token': process.env.accessToken || userConfig.accessToken || '<access-token_from_fortnox>',
-      'Client-Secret': process.env.clientSecret || userConfig.clientSecert || '<client-secret_from_fortnox>',
-      'Content-Type': 'appliation/json',
-      'Accept': 'appliation/json'
+      'Client-Secret': process.env.clientSecret || userConfig.clientSecret || '<client-secret_from_fortnox>',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     }
   }
 }
