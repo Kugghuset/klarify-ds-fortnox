@@ -223,9 +223,30 @@ exports.insertMany = function insertMany(customers) {
   });
 };
 
-
-exports.removeCustomers = function (params) {
-
+/**
+ * Sets a customer to disabled.
+ * 
+ * @param {Number} customerID
+ * @return {Promise} -> undefined
+ */
+exports.disable = function (customerID) {
+  return new Promise(function (resolve, reject) {
+    sql.execute({
+      query: sql.fromFile('./sql/customer.disabledByID.sql'),
+      params: {
+        customerID: {
+          type: sql.BIGINT,
+          val: customerID
+        }
+      }
+    })
+    .then(function (result) {
+      resolve(result);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
 }
 
 /**

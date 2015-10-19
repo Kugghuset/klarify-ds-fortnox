@@ -19,7 +19,8 @@ IF (@topNum) > 0
       , OrganisationNumber
       , Phone
       , ZipCode
-  FROM Customer
+      , IsDisabled
+  FROM Customer;
 
   ELSE
     SELECT
@@ -34,4 +35,5 @@ IF (@topNum) > 0
       , OrganisationNumber
       , Phone
       , ZipCode
+      , IsDisabled
   FROM Customer;
