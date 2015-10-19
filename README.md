@@ -44,7 +44,9 @@ module.exports = {
   dbUser: 'sa', // database user
   dbPass: 'pass', // database password
   dbServer: 'EASTGROVESOFTWA\\LOCALSQL', // database server
-  dbName: 'master' // name of database
+  dbName: 'master', // name of database
+  accessToken: 'cannot_give_these_out', // accessToken from Fortnox
+  clientSecret: 'cannot_give_these_out' // clientSecret from Fortnox
 };
 ```
 
