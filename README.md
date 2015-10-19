@@ -69,17 +69,7 @@ Tests are written in [Mocha](http://mochajs.org/), and uses [unit.js](http://uni
 
 The testing suite can be run either via Mocha itself, npm or gulp. I advice to use `npm test` as it's colorized and runs from everywhere.
 
-**Mocha:** From the root folder, run:
-```
-mocha test
-```
-
 **npm:** from anywhere in the project, run:
 ```
 npm test
-```
-
-**gulp:** (_no colors_) from anywhere in the project, run:
-```
-gulp test
 ```
