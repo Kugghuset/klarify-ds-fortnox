@@ -119,88 +119,136 @@ exports.insertOne = function (customer) {
 };
 
 /**
- * Inserts one or many customers into the Customer table.
+ * Maps over *customers* and return a sort of
+ * prepared statement for every customer.
+ * 
+ * Creates a string of SQL params for an insert of N number of rows.
+ * 
+ * NOTE: SQL Server seems to allow a maximum of 2100 variables, keep it under this!
  * 
  * @param {Array} customers ([Customer])
+ * @return {String}
+ */
+function getCustomerParameterString(customers) {
+  return _.map(customers, function (customer, i) {
+    return '('
+    + [ '@url' + i
+      , '@address1' + i
+      , '@address2' + i
+      , '@city' + i
+      , '@customerNumber' + i
+      , '@email' + i
+      , '@name' + i
+      , '@organisationNumber' + i
+      , '@phone' + i
+      , '@zipCode' + i
+    ].join(', ')
+    + ')';
+  }).join(', ');
+}
+
+/**
+ * Creates an object containing all params for inserting customer values.
+ * 
+ * @param {Array} customers ([Customer])
+ * @return {Object}
+ */
+function getCustomerParameters(customers) {
+  var customerParamObj = {};
+  
+  // _.map is used over a for loop, as it behaves sort of like a for loop and a foreach loop at ones.
+  _.map(customers, function (customer, i) {
+    customerParamObj['url' + i] = {
+      type: sql.NVARCHAR,
+      val: customer['@url']
+    };
+    customerParamObj['address1' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.Address1
+    };
+    customerParamObj['address2' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.Address2
+    };
+    customerParamObj['city' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.City
+    };
+    customerParamObj['customerNumber' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.CustomerNumber
+    };
+    customerParamObj['email' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.Email
+    };
+    customerParamObj['name' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.Name
+    };
+    customerParamObj['organisationNumber' + i] = {
+      type: sql.NVARCHAR(30),
+      val: customer.OrganisationNumber
+    };
+    customerParamObj['phone' + i] = {
+      type: sql.NVARCHAR(1024),
+      val: customer.Phone
+    };
+    customerParamObj['zipCode' + i] = {
+      type: sql.NVARCHAR(10),
+      val: customer.ZipCode
+    };
+  });
+  
+  return customerParamObj;
+}
+
+/**
+ * Recursively inserts one or many customers into the Customer table.
+ * 
+ * If there's a chance of there being more than 2100 params,
+ * queries are split into smaller chunks to ensure the limit isn't reached,
+ * which is achieved using recursion.
+ * 
+ * @param {Array} customers ([Customer])
+ * @param {Array} inserted ([Customer]) - used for recursion, don't set.
  * @return {Promise} -> undefined
  */
-exports.insertMany = function insertMany(customers) {
-  return new Promise(function (resolve, reject) {
-    
-    // Ensure there's anything to put in.
-    if (!Array.isArray(customers)) {
-      // return early if customers are non-existant
-      return reject(new TypeError('customers must be of type Array'))
-    } else if (customers.length < 1) {
-      // Nothing to input
-      return resolve(undefined);
+exports.insertMany = function insertMany(customers, inserted) {
+  // Set *inserted* to an empty array if it's undefined
+  if (!inserted) { inserted = []; }
+  
+    // Return if the recursion is finished.
+    if (customers.length === inserted.length) {
+      // SQL INSERTs returns undefined, change this?
+      return new Promise(function (resolve, reject) {
+        resolve(inserted.length);
+      });
     }
     
+  // Slice of customers to be inserted this time.
+  var customerSlice = [];
+  return new Promise(function (resolve, reject) {
     /**
-     * Map over *customers* and return a sort of
-     * prepared statement for every customer.
+     * Is performed only once to ensure customers are correct.
+     * Will return early if any condition is met.
      */
-    var customerParamStr = _.map(customers, function (customer, i) {
-      return '(' 
-      + [ '@url' + i
-        , '@address1' + i
-        , '@address2' + i
-        , '@city' + i
-        , '@customerNumber' + i
-        , '@email' + i
-        , '@name' + i
-        , '@organisationNumber' + i
-        , '@phone' + i
-        , '@zipCode' + i
-      ].join(', ')
-      + ')';
-    }).join(', ');
-
-    var customerParamObj = {};
+    if (!inserted.length) {
+      // Ensure there's anything to put in.
+      if (!Array.isArray(customers)) {
+        return reject(new TypeError('customers must be of type Array'))
+      } else if (customers.length < 1) {
+        // Nothing to input
+        return resolve(undefined);
+      }
+    }
     
-    // _.map is used over a for loop, as it behaves sort of like a for loop and a foreach loop at ones.
-    _.map(customers, function (customer, i) {
-      customerParamObj['url' + i] = {
-        type: sql.NVARCHAR,
-        val: customer['@url']
-      };
-      customerParamObj['address1' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.Address1
-      };
-      customerParamObj['address2' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.Address2
-      };
-      customerParamObj['city' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.City
-      };
-      customerParamObj['customerNumber' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.CustomerNumber
-      };
-      customerParamObj['email' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.Email
-      };
-      customerParamObj['name' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.Name
-      };
-      customerParamObj['organisationNumber' + i] = {
-        type: sql.NVARCHAR(30),
-        val: customer.OrganisationNumber
-      };
-      customerParamObj['phone' + i] = {
-        type: sql.NVARCHAR(1024),
-        val: customer.Phone
-      };
-      customerParamObj['zipCode' + i] = {
-        type: sql.NVARCHAR(10),
-        val: customer.ZipCode
-      };
-    });
+    var startIndex = inserted.length;
+    var n = Object.keys(customers[0]).length;
+    // Max number of params are 2100
+    var endIndex = startIndex + Math.floor(2100 / n) - 1;
+    
+    customerSlice = customers.slice(startIndex, endIndex);
     
     /**
     * Generate the query by replacing '{{ query_placehodler }}'
@@ -208,19 +256,19 @@ exports.insertMany = function insertMany(customers) {
     */
     var insertQuery = sql
       .fromFile('./sql/customer.insertMany.sql')
-      .replace('{{ query_placeholder }}', customerParamStr);
+      .replace('{{ query_placeholder }}', getCustomerParameterString(customerSlice));
 
-    sql.execute({
+    return sql.execute({
       query: insertQuery,
-      params: customerParamObj
+      params: getCustomerParameters(customerSlice)
     })
-    .then(function (result) {
-      resolve(result);
-    })
-    .catch(function (err) {
-      reject(err);
-    });
-  });
+    .then(resolve)
+    .catch(reject);
+  })
+  .then(function (result) {
+    // Recursion!
+    return insertMany(customers, inserted.concat(customerSlice));
+  })
 };
 
 /**
