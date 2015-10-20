@@ -1,5 +1,8 @@
 /*
-Drops the table.
+Drops the table if it exists.
 */
 
-DROP TABLE Customer;
+IF (OBJECT_ID('Customer', 'U') IS NOT NULL)
+BEGIN
+  DROP TABLE Customer;
+END
