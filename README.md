@@ -85,3 +85,10 @@ npm test
 ```
 gulp test
 ```
+
+### TODOs
+
+#### Customer
+
+- Add unit tests for database calls
+- Add unit tests for requests
