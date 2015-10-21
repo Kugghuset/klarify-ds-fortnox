@@ -8,13 +8,19 @@ if (!userConfig) {
   userConfig = {};
 }
 
-console.log(userConfig);
-
 module.exports = {
   db: {
     user: process.env.dbUser || userConfig.dbUser || 'sa',
-    passwor: process.env.dbPass || userConfig.dbPass || 'pass',
+    password: process.env.dbPass || userConfig.dbPass || 'pass',
     server: process.env.dbServer || userConfig.dbServer || 'localhost',
     database: process.env.dbName || userConfig.dbName || 'master'
+  },
+  headers: {
+    standard: {
+      'Access-Token': process.env.accessToken || userConfig.accessToken || '<access-token_from_fortnox>',
+      'Client-Secret': process.env.clientSecret || userConfig.clientSecret || '<client-secret_from_fortnox>',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
   }
 }

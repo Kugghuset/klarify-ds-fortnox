@@ -44,7 +44,9 @@ module.exports = {
   dbUser: 'sa', // database user
   dbPass: 'pass', // database password
   dbServer: 'EASTGROVESOFTWA\\LOCALSQL', // database server
-  dbName: 'dbName' // name of database
+  dbName: 'master', // name of database
+  accessToken: 'cannot_give_these_out', // accessToken from Fortnox
+  clientSecret: 'cannot_give_these_out' // clientSecret from Fortnox
 };
 ```
 
@@ -73,3 +75,14 @@ The testing suite can be run either via Mocha itself, npm or gulp. I advice to u
 ```
 npm test
 ```
+
+---
+
+### TODOs
+
+#### Customer
+
+- Add unit tests for database calls
+- Add unit tests for requests
+- Add date created and date updated
+- Add flow for downloads
