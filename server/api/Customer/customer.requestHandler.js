@@ -22,34 +22,53 @@ function getCustomerPage(pageNum) {
 }
 
 /**
- * Gets all Customers from Fortnox.
+ * Recursively gets all Customers from Fortnox.
  * 
- * NOTE: Does not handle paginated requests,
- * thus can only request the 100 first Customers.
- * 
+ * @param {Array} customers - set recursively, do not pass in!
+ * @param {Number} currentPage - set recursively, do not pass in!
+ * @param {Number} lastPage - set recursively, do not pass in!
  * @return {Promise} -> ([Customer])
  */
-exports.getAll = function () {
+exports.getAll = function getAll(customers, currentPage, lastPage) {
+  
+  // Setup for recursive calls
+  if (!customers) {
+    customers = [];
+    currentPage = 0;
+  }
+  
+  if (currentPage === lastPage) {
+    return new Promise(function (resolve, reject) {
+      resolve(customers);
+    });
+  }
+  
   return new Promise(function (resolve, reject) {
+    currentPage++;
+    
     request.get({
-      url: getCustomerPage(1),
+      url: getCustomerPage(currentPage),
       headers: config.headers.standard
     }, function (err, res, body) {
       if (err) {
-        // Something went wrong...
-        reject(err);
-        
+        reject(err); // Something went wrong with the request...
       } else {
-        // Success!
         try {
-          var parsed = JSON.parse(body);
-          // TODO: handle paginated response
+          var parsedBody = JSON.parse(body);
           
-          resolve(parsed.Customers);
+          // Set lastPage to the number of total pages.
+          if (typeof lastPage === 'undefined') {
+            lastPage = parseInt(parsedBody.MetaInformation['@TotalPages']);
+          }
+          
+          resolve(parsedBody.Customers);
         } catch (error) {
           reject(err);
         }
       }
     });
+  })
+  .then(function (res) {
+    return getAll(customers.concat(res), currentPage, lastPage);
   });
 };

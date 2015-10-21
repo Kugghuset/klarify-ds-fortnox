@@ -141,11 +141,9 @@ exports.insertMany = function insertMany(customers, inserted) {
     var lastInserted = customers[inserted.length];
     
     return new Promise(function (resolve, reject) {
-      
       exports.insertOne(lastInserted)
       .then(resolve)
       .catch(reject);
-      
     })
     .then(function (result) {
       return insertMany(customers, inserted.concat([lastInserted]));
