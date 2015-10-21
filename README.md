@@ -33,7 +33,7 @@ git update-index --assume-unchanged userConfig.js
 ```
 
 Lastly update `userConfig.js` file to match your setup.
-Note: changes to this file won't be commited as it is in the `.gitignore` file.
+Note: changes to this file won't be commited as it is in the `.gitignore` file. To ensure you don't have to constantly get new keys, keep a copy of this file outside the repository, so won't lose any local keys when pulling.
 
 Here's how I've set mine up:
 
