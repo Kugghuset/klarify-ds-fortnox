@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var sql = require('seriate');
 var config = require('./config/environment/development');
+var appState = require('./app.state');
 var customer = require('./api/Customer/customer');
 
 var dbConfig = {
