@@ -22,26 +22,13 @@ gulp.task('server', function () {
   });
 });
 
-// Write testing for gulp
-gulp.task('test', function (cb) {
-  exec('npm test', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    if (typeof cb === 'function') {
-      cb(err);
-    }
-  });
+// Watchers
+gulp.task('watch', function () {
+  gulp.watch(['./server/**'], ['server']);
 });
 
 // Default task
-gulp.task('default', function () {
-  gulp.run('server');
-  
-  // Every change, do this.
-  gulp.watch(['./server/**'], function () {
-    gulp.run('server');
-  });
-});
+gulp.task('default', ['server', 'watch']);
 
 // On process close, clean up.
 process.on('exit', function () {
