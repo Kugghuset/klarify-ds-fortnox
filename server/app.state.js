@@ -28,10 +28,10 @@ exports.initializeTable = function initializeTable() {
  * 
  * @return {Promise} -> {Object}
  */
-exports.getState = function getState() {
+exports.getCurrentState = function getCurrentState() {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/app.getState.sql')
+      query: sql.fromFile('./sql/app.getCurrentState.sql')
     })
     .then(function (result) {
       resolve(result)
@@ -69,6 +69,25 @@ exports.insertState = function insertState(row) {
 }
 
 /**
+ * Gets all app states from the database.
+ * 
+ * @return {Promise} -> ([State])
+ */
+exports.getAllState = function getAllState() {
+  return new Promise(function (resolve, reject) {
+    sql.execute({
+      query: sql.fromFile('./sql/app.getAllState.sql')
+    })
+    .then(function (result) {
+      resolve(result);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+}
+
+/**
  * Either creates a completely new or clones and updates the last state row
  * with *column* set to *value*.
  * 
@@ -78,7 +97,7 @@ exports.insertState = function insertState(row) {
  */
 exports.setUpdated = function setUpdated(column, value) {
   return new Promise(function (resolve, reject) {
-    exports.getState()
+    exports.getCurrentState()
     .then(function (val) {
       return new Promise(function (resolve, reject) {
         var row = {};
@@ -99,6 +118,7 @@ exports.setUpdated = function setUpdated(column, value) {
     })
     .then(exports.insertState)
     .then(function (res) {
+      
       resolve(res);
     })
     .catch(function (err) {
@@ -117,7 +137,7 @@ exports.setUpdated = function setUpdated(column, value) {
 exports.dropState = function dropState() {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('.sql/app.dropState.sql')
+      query: sql.fromFile('./sql/app.dropState.sql')
     })
     .then(function (result) {
       resolve(result);
