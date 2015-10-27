@@ -33,11 +33,22 @@ FROM (
   USING [dbo].[TempCustomer] AS [Source]
     ON [Target].CustomerNumber = [Source].CustomerNumber
     AND [Target].IsCurrent = 1
-  WHEN MATCHED
-      THEN UPDATE SET
-          [IsCurrent] = 0
-        , [EndDate] = GETUTCDATE()
-        , [LastUpdated] = GETUTCDATE()
+  WHEN MATCHED AND (
+      [Target].[@url] != [Source].[@url]
+   OR [Target].[Address1] != [Source].[Address1]
+   OR [Target].[Address2] != [Source].[Address2]
+   OR [Target].[City] != [Source].[City]
+   OR [Target].[CustomerNumber] != [Source].[CustomerNumber]
+   OR [Target].[Email] != [Source].[Email]
+   OR [Target].[Name] != [Source].[Name]
+   OR [Target].[OrganisationNumber] != [Source].[OrganisationNumber]
+   OR [Target].[Phone] != [Source].[Phone]
+   OR [Target].[ZipCode] != [Source].[ZipCode]
+    )
+    THEN UPDATE SET
+        [IsCurrent] = 0
+      , [EndDate] = GETUTCDATE()
+      , [LastUpdated] = GETUTCDATE()
   WHEN NOT MATCHED BY TARGET
     THEN INSERT (
         [@url]
