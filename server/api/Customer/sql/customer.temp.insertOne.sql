@@ -1,8 +1,8 @@
 /*
-Inserts one Customer into the Customer table.
+Inserts one Customer into the TempCustomer table.
 */
 
-INSERT INTO Customer (
+INSERT INTO dbo.TempCustomer (
       [@url]
     , Address1
     , Address2
