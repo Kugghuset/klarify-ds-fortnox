@@ -84,5 +84,4 @@ npm test
 
 - Add unit tests for database calls
 - Add unit tests for requests
-- Add date created and date updated
 - Add flow for downloads
