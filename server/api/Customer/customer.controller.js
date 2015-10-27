@@ -8,12 +8,18 @@ var Promise = require('bluebird');
  * Runs the init script for the model,
  * adding the table to the SQL database if it's non-existent.
  * 
+ * @param {Bool} isTemp - optional
  * @return {Promise} -> undefined
  */
-exports.initializeTable = function () {
+exports.initializeTable = function (isTemp) {
   return new Promise(function (resolve, reject) {
+    
+    var sqlFile = isTemp
+      ? './sql/customer.temp.initialize.sql'
+      : './sql/customer.initialize.sql';
+    
     sql.execute({
-      query: sql.fromFile('./sql/customer.initialize.sql')
+      query: sql.fromFile(sqlFile)
     })
     .then(function (results) {
       resolve(results);
@@ -55,17 +61,22 @@ exports.getCustomers = function (limit) {
  * If no *customer* is non-existent or not
  * 
  * @param {Object} customer
+ * @param {Bool} isTemp - optional
  * @return {Promise} -> undefined
  */
-exports.insertOne = function (customer) {
+exports.insertOne = function (customer, isTemp) {
   return new Promise(function (resolve, reject) {
     if (!customer || typeof customer !== 'object') {
       // return early if no customer is present.
       return reject(new TypeError('Customer must be of type "object"'));
     }
-
+    
+    var sqlFile = isTemp 
+      ? './sql/customer.temp.insertOne.sql' 
+      : './sql/customer.insertOne.sql';
+    
     sql.execute({
-      query: sql.fromFile('./sql/customer.insertOne.sql'),
+      query: sql.fromFile(sqlFile),
       params: {
         url: {
           type: sql.NVARCHAR,
@@ -123,10 +134,11 @@ exports.insertOne = function (customer) {
  * This is achieved by inserting them one by one.
  * 
  * @param {Array} customers ([Customer])
+ * @param {Bool} isTemp - optional
  * @param {Array} inserted ([Customer]) - used for recursion, don't set.
  * @return {Promise} -> undefined
  */
-exports.insertMany = function insertMany(customers, inserted) {
+exports.insertMany = function insertMany(customers, isTemp, inserted) {
   // Set *inserted* to an empty array if it's undefined
   if (!inserted) { inserted = []; }
   
@@ -141,14 +153,55 @@ exports.insertMany = function insertMany(customers, inserted) {
     var lastInserted = customers[inserted.length];
     
     return new Promise(function (resolve, reject) {
-      exports.insertOne(lastInserted)
+      exports.insertOne(lastInserted, isTemp)
       .then(resolve)
       .catch(reject);
     })
     .then(function (result) {
-      return insertMany(customers, inserted.concat([lastInserted]));
+      return insertMany(customers, isTemp, inserted.concat([lastInserted]));
     });
 };
+
+/**
+ * Updates existing but changed custumers and inserts new customers
+ * into the customer table.
+ * 
+ * @return {Promise} -> undefined
+ */
+exports.updateOrInsert = function updateOrInsert(customers) {
+  return new Promise(function (resolve, reject) {
+    new Promise(function (resolve, reject) {
+      exports.initializeTable(true)
+      .then(function () {
+        
+        exports.insertMany(customers, true)
+        .then(resolve);
+      })
+      .catch(reject);
+    })
+    .then(function () {
+      return new Promise(function (resolve, reject) {
+        // Fix this
+        // http://www.purplefrogsystems.com/blog/2012/01/using-t-sql-merge-to-load-data-warehouse-dimensions/
+        sql.execute({
+          query: sql.fromFile('./sql/customer.merge.sql')
+        })
+        .then(function (result) {
+          resolve(result);
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+      });
+    })
+    .then(function () {
+      resolve('');
+      exports.drop(true)
+      .then(resolve);
+    });
+    
+  });
+}
 
 /**
  * Sets a customer to disabled.
@@ -178,14 +231,20 @@ exports.disable = function (customerID) {
 
 /**
  * Drops the Customer table.
- * 
  * Should really never be used?
+ * 
+ * @param {Bool} isTemp - optional
  * @return {Promise} -> undefined
  */
-exports.drop = function () {
+exports.drop = function (isTemp) {
   return new Promise(function (resolve, reject) {
+    
+    var sqlFile = isTemp
+      ? './sql/customer.temp.drop.sql'
+      : './sql/customer.drop.sql';
+    
     sql.execute({
-      query: sql.fromFile('./sql/customer.drop.sql')
+      query: sql.fromFile(sqlFile)
     })
     .then(function (result) {
       resolve(result);

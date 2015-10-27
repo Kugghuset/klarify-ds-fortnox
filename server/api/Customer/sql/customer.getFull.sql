@@ -8,32 +8,32 @@ otherwise every item is selected.
 IF (@topNum) > 0
 
   SELECT TOP (@topNum)
-        CustomerID
+        [CustomerID]
       , [@url]
-      , Address1
-      , Address2
-      , City
-      , CustomerNumber
-      , Email
+      , [Address1]
+      , [Address2]
+      , [City]
+      , [CustomerNumber]
+      , [Email]
       , [Name]
-      , OrganisationNumber
-      , Phone
-      , ZipCode
-      , IsDisabled
-  FROM Customer;
+      , [OrganisationNumber]
+      , [Phone]
+      , [ZipCode]
+      , [IsCurrent]
+  FROM [dbo].[Customer];
 
   ELSE
     SELECT
-        CustomerID
+        [CustomerID]
       , [@url]
-      , Address1
-      , Address2
-      , City
-      , CustomerNumber
-      , Email
+      , [Address1]
+      , [Address2]
+      , [City]
+      , [CustomerNumber]
+      , [Email]
       , [Name]
-      , OrganisationNumber
-      , Phone
-      , ZipCode
-      , IsDisabled
-  FROM Customer;
+      , [OrganisationNumber]
+      , [Phone]
+      , [ZipCode]
+      , [IsCurrent]
+  FROM [dbo].[Customer];

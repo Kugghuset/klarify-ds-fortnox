@@ -2,10 +2,9 @@
 On start, create the Customer table if it's not present.
 */
 
-IF (OBJECT_ID('Customer', 'U') IS NULL)
+IF (OBJECT_ID('TempCustomer', 'U') IS NULL)
 BEGIN
-  CREATE TABLE [dbo].[Customer] (
-    [CustomerID] bigint IDENTITY(1, 1) PRIMARY KEY NOT NULL,
+  CREATE TABLE [dbo].[TempCustomer] (
     [@url] nvarchar(max) NULL,
     [Address1] nvarchar(1024) NULL,
     [Address2] nvarchar(1024) NULL,
