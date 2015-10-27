@@ -10,7 +10,10 @@ var _ = require('lodash');
  * @return {String}
  */
 exports.formattedDate = function (date) {
-  if (!date) { return ''; } 
+  if (!date || !(typeof date === 'object' && 'toISOString' in date)) {
+    return '';
+  } 
+  
   return date.toISOString().replace('T', ' ').split('').slice(0,16).join('');
 };
 
