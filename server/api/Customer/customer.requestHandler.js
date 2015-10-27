@@ -3,42 +3,12 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
 var request = require('request');
+
 var config = require('../../config/environment/development');
 var appState = require('../../app.state');
+var util = require('../../utils/fortnox.util');
 
 var fortnoxCustomerUrl = 'https://api.fortnox.se/3/customers/';
-
-/**
- * Formats the date as a string with the following structure:
- * YYYY-MM-DD HH:mm
- * 
- * @param {Date} date
- * @return {String}
- */
-function getFormattedDate(date) {
-  if (!date) { return ''; } 
-  return date.toISOString().replace('T', ' ').split('').slice(0,16).join('');
-};
-
-/**
- * Returns the url for the Customer page at *pageNum*.
- * *pageNum* defaults to 1 if it's either undefined, lower than 1 or NaN.
- * *pageNum* should be an integer, but the Fortnox API seems to floor the value.
- * 
- * @param {Number} pageNum - optional
- * @param {Date} lastUpdated - optional
- * @return {String}
- */
-function pageUrlFor(pageNum, lastUpdated) {
-  if (typeof pageNum != 'undefined' && (!pageNum || isNaN(pageNum) || pageNum < 1)) { pageNum = 1; }
-  
-  var params = _.filter([
-    typeof pageNum != 'undefined' ? 'page=' + pageNum : '',
-    lastUpdated ? 'lastmodified=' + getFormattedDate(lastUpdated) : ''
-  ]).join('&');
-  
-  return encodeURI(_.filter([fortnoxCustomerUrl, params]).join('?'));
-}
 
 /**
  * Returns a promise of the body of the response.
@@ -112,7 +82,7 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
   }
   
   currentPage++;
-  return getPage(pageUrlFor(currentPage))
+  return getPage(util.pageUrlFor(fortnoxCustomerUrl, currentPage))
   .then(function (res) {
     if ('ErrorInformation' in res) {
       // Reject the because of the error to ensure no infinity loop.
@@ -183,7 +153,7 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
     lastUpdated = dateUpdated;
     currentPage++;
       
-    return getPage(pageUrlFor(currentPage, lastUpdated))
+    return getPage(util.pageUrlFor(fortnoxCustomerUrl, currentPage, lastUpdated))
   })
   .then(function (res) {
     if ('ErrorInformation' in res) {
