@@ -2,17 +2,17 @@
 Inserts one Customer into the TempCustomer table.
 */
 
-INSERT INTO dbo.TempCustomer (
+INSERT INTO [dbo].[TempCustomer] (
       [@url]
-    , Address1
-    , Address2
-    , City
-    , CustomerNumber
-    , Email
+    , [Address1]
+    , [Address2]
+    , [City]
+    , [CustomerNumber]
+    , [Email]
     , [Name]
-    , OrganisationNumber
-    , Phone
-    , ZipCode
+    , [OrganisationNumber]
+    , [Phone]
+    , [ZipCode]
     )
 VALUES (
     @url
