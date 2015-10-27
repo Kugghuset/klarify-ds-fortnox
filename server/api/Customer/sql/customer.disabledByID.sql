@@ -3,5 +3,8 @@ Sets a Customer to disabled.
 */
 
 UPDATE dbo.Customer
-SET Customer.IsDisabled = 1
+SET
+    Customer.IsCurrent = 1
+  , Customer.EndDate = GETUTCDATE()
+  , Customer.LastUpdated = GETUTCDATE()
 Where CustomerID = @customerID;

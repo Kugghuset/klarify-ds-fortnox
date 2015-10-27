@@ -1,5 +1,7 @@
 /*
-Merges the TempCustomer table into the Customer table.
+Slowly Changing Dimensions for the Customer table.
+This merges from TempCustomer into Customer,
+and upon change disables the old row and inserts a new row.
 */
 
 
@@ -14,7 +16,6 @@ INSERT INTO [dbo].[Customer] (
   , [OrganisationNumber]
   , [Phone]
   , [ZipCode]
-  , [IsDisabled]
   )
 SELECT
     [@url]
@@ -27,7 +28,6 @@ SELECT
   , [OrganisationNumber]
   , [Phone]
   , [ZipCode]
-  , [IsDisabled]
 FROM (
   MERGE [dbo].[Customer] AS [Target]
   USING [dbo].[TempCustomer] AS [Source]
@@ -78,7 +78,6 @@ FROM (
         [IsCurrent] = 0
       , [EndDate] = GETUTCDATE()
       , [LastUpdated] = GETUTCDATE()
-      , [IsDisabled] = 1
   OUTPUT $action AS [Action]
     , [Source].*
   ) AS [MergeOutput]

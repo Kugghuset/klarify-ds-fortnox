@@ -19,7 +19,6 @@ BEGIN
     IsCurrent bit NULL DEFAULT 1,
     StartDate datetime2 NULL DEFAULT GETUTCDATE(),
     EndDate datetime2 NULL,
-    LastUpdated datetime2 NULL DEFAULT GETUTCDATE(),
-    IsDisabled bit NULL DEFAULT 0
+    LastUpdated datetime2 NULL DEFAULT GETUTCDATE()
   )
 END

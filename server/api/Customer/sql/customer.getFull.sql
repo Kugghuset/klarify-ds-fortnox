@@ -19,7 +19,7 @@ IF (@topNum) > 0
       , OrganisationNumber
       , Phone
       , ZipCode
-      , IsDisabled
+      , IsCurrent
   FROM Customer;
 
   ELSE
@@ -35,5 +35,5 @@ IF (@topNum) > 0
       , OrganisationNumber
       , Phone
       , ZipCode
-      , IsDisabled
+      , IsCurrent
   FROM Customer;
