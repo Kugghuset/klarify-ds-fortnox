@@ -36,10 +36,10 @@ exports.initializeTable = function (isTemp) {
  * @param {Number} limit - optional,  1 <= limit <= 9223372036854775295.
  * @return {Promise} -> {[Customer]}
  */
-exports.getCustomers = function (limit) {
+exports.getAll = function (limit) {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/customer.getFull.sql'),
+      query: sql.fromFile('./sql/customer.getAll.sql'),
       params: {
         topNum: {
           type: sql.BIGINT,
