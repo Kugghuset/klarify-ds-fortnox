@@ -181,8 +181,6 @@ exports.updateOrInsert = function updateOrInsert(customers) {
     })
     .then(function () {
       return new Promise(function (resolve, reject) {
-        // Fix this
-        // http://www.purplefrogsystems.com/blog/2012/01/using-t-sql-merge-to-load-data-warehouse-dimensions/
         sql.execute({
           query: sql.fromFile('./sql/customer.merge.sql')
         })

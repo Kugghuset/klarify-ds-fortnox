@@ -7,15 +7,16 @@ var Promise = require('bluebird');
 /**
  * Initializes the table if it's not created.
  * 
- * @return {Promise} -> undefined
+ * @param {String} tableName
+ * @return {Promise} -> *tableName* (String)
  */
-exports.initializeTable = function initializeTable() {
+exports.initializeTable = function initializeTable(tableName) {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/app.initializeState.sql')
+      query: sql.fromFile('./sql/app.initializeState.sql').replace(/{{ table_name }}/g, 'State' + tableName)
     })
     .then(function (result) {
-      resolve(result);
+      resolve(tableName);
     })
     .catch(function (err) {
       reject(err);
@@ -24,14 +25,35 @@ exports.initializeTable = function initializeTable() {
 };
 
 /**
+ * Initializes all appStates for *tableNames* if needed.
+ * 
+ * @param {Array} tableNames
+ * @return {Promise} -> *tableNames* (Array)
+ */
+exports.initializeTables = function initializeTables(tableNames) {
+  return new Promise(function (resolve, reject) {
+    Promise.settle(_.map(tableNames, exports.initializeTable))
+    .then(function (promiseResults) {
+      resolve(_.map(promiseResults, function (res) {
+        return res.value();
+      }));
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+}
+
+/**
  * Gets the current state of the Fortnox sprocket.
  * 
+ * @param {String} tableName
  * @return {Promise} -> {Object}
  */
-exports.getCurrentState = function getCurrentState() {
+exports.getCurrentState = function getCurrentState(tableName) {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/app.getCurrentState.sql')
+      query: sql.fromFile('./sql/app.getCurrentState.sql').replace(/{{ table_name }}/g, 'State' + tableName)
     })
     .then(function (result) {
       resolve(result)
@@ -46,18 +68,13 @@ exports.getCurrentState = function getCurrentState() {
  * Inserts a new row into the StateFortnox array.
  * 
  * @param {Object} row
+ * @param {String} tableName
  * @return {Promise} -> undefined
  */
-exports.insertState = function insertState(row) {
+exports.insertState = function insertState(tableName) {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/app.insertState.sql'), 
-      params: {
-        customerDateUpdated: {
-          type: sql.DATETIME2,
-          val: row.CustomerDateUpdated
-        }
-      }
+      query: sql.fromFile('./sql/app.insertState.sql').replace(/{{ table_name }}/g, 'State' + tableName)
     })
     .then(function (result) {
       resolve(result);
@@ -71,12 +88,13 @@ exports.insertState = function insertState(row) {
 /**
  * Gets all app states from the database.
  * 
+ * @param {String} tableName
  * @return {Promise} -> ([State])
  */
-exports.getAllState = function getAllState() {
+exports.getAllState = function getAllState(tableName) {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/app.getAllState.sql')
+      query: sql.fromFile('./sql/app.getAllState.sql').replace(/{{ table_name }}/g, 'State' + tableName)
     })
     .then(function (result) {
       resolve(result);
@@ -91,59 +109,38 @@ exports.getAllState = function getAllState() {
  * Either creates a completely new or clones and updates the last state row
  * with *column* set to *value*.
  * 
- * @param {String} column
- * @param {Any} value
- * @return {Promise} -> undefined
+ * @param {String} tableName
+ * @return {Promise} -> *tableName* (String)
  */
-exports.setUpdated = function setUpdated(column, value) {
+exports.setUpdated = function setUpdated(tableName) {
   return new Promise(function (resolve, reject) {
-    exports.getCurrentState()
-    .then(function (val) {
-      return new Promise(function (resolve, reject) {
-        var row = {};
-        
-        // Check if there is an array with value(s)
-        if (Array.isArray(val) && !!val.length) {
-          // There is a value which we'll use and 'clone'
-          row = val[val.length - 1];
-          // Set the column of which we want to update
-          row[column] = value;
-        } else {
-          // Set the column of which we want to update
-          row[column] = value;
-        }
-        
-        resolve(row);
-      });
-    })
-    .then(exports.insertState)
+    exports.insertState(tableName)
     .then(function (res) {
-      
-      resolve(res);
-    })
-    .catch(function (err) {
-      reject(err);
-    })
-    
-  });
-}
-
-/**
- * Drops the StateFortnox table.
- * 
- * ShoUld really never be used?
- * @return {Promise} -> undefined
- */
-exports.dropState = function dropState() {
-  return new Promise(function (resolve, reject) {
-    sql.execute({
-      query: sql.fromFile('./sql/app.dropState.sql')
-    })
-    .then(function (result) {
-      resolve(result);
+      resolve(tableName);
     })
     .catch(function (err) {
       reject(err);
     });
   });
-}
+};
+
+/**
+ * Drops the StateFortnox table.
+ * 
+ * ShoUld really never be used?
+ * @param {String} tableName
+ * @return {Promise} -> *tableName* (String)
+ */
+exports.dropState = function dropState(tableName) {
+  return new Promise(function (resolve, reject) {
+    sql.execute({
+      query: sql.fromFile('./sql/app.dropState.sql').replace(/{{ table_name }}/g, 'State' + tableName)
+    })
+    .then(function (result) {
+      resolve(tableName);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+};

@@ -2,10 +2,10 @@
 On start, create the sprocket's state table if it's not preset.
 */
 
-IF (OBJECT_ID('StateFortnox', 'U') IS NULL)
+IF (OBJECT_ID('{{ table_name }}', 'U') IS NULL)
 BEGIN
-  CREATE TABLE [dbo].[StateFortnox] (
+  CREATE TABLE [dbo].[{{ table_name }}] (
     [StateID] bigint IDENTITY(1, 1) PRIMARY KEY NOT NULL,
-    [CustomerDateUpdated] datetime2 NULL
+    [DateUpdated] datetime2 NOT NULL DEFAULT GETUTCDATE()
   )
 END

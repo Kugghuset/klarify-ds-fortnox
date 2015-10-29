@@ -71,7 +71,7 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
     return new Promise(function (resolve, reject) {
       
       // Actual return of the function
-      appState.setUpdated('CustomerDateUpdated', new Date())
+      appState.setUpdated('Customer', new Date())
       .then(function () {
         resolve(customers); // This is returned.
       })
@@ -119,7 +119,7 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
   if (currentPage >= lastPage) {
     return new Promise(function (resolve, reject) {
       // Actual return of the function
-      appState.setUpdated('CustomerDateUpdated', new Date())
+      appState.setUpdated('Customer', new Date())
       .then(function (rs) {
         resolve(customers) // This is the return
       })
@@ -136,10 +136,10 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
     }
     
     // Get lastUpdated from db
-    appState.getCurrentState()
+    appState.getCurrentState('Customer')
     .then(function (currentState) {
       if (currentState[0] !== null && typeof currentState[0] === 'object') {
-        resolve(currentState[0].CustomerDateUpdated);
+        resolve(currentState[0].Customer);
       } else {
         // There is no lastUpdated, but it's not date last updated
         resolve(null);

@@ -1,10 +1,10 @@
 /*
-Inserts a new StateFortnox row.
+Inserts a new {{ table_name }} row with the current UTC date in DateUpdated.
 */
 
-INSERT INTO [dbo].[StateFortnox] (
-  [CustomerDateUpdated]
+INSERT INTO [dbo].[{{ table_name }}] (
+  [DateUpdated]
 )
 VALUES (
-  @customerDateUpdated
+  GETUTCDATE()
 );
