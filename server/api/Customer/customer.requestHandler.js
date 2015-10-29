@@ -71,7 +71,7 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
     return new Promise(function (resolve, reject) {
       
       // Actual return of the function
-      appState.setUpdated('Customer', new Date())
+      appState.setUpdated('Customer')
       .then(function () {
         resolve(customers); // This is returned.
       })
@@ -118,8 +118,9 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
   // Check if it's finished
   if (currentPage >= lastPage) {
     return new Promise(function (resolve, reject) {
+      resolve(customers)
       // Actual return of the function
-      appState.setUpdated('Customer', new Date())
+      appState.setUpdated('Customer')
       .then(function (rs) {
         resolve(customers) // This is the return
       })
