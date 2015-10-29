@@ -32,3 +32,25 @@ exports.cleanAndFetch = function () {
   .then(requestHandler.getAll)
   .then(controller.insertMany);
 }
+
+/**
+ * Gets all active customers from the database.
+ * 
+ * @return {Promise} -> ([Customer])
+ */
+exports.getAllActive = function () {
+  return controller.initializeTable()
+  .then(controller.getActive);
+};
+
+/**
+ * Gets all active customers where
+ * StartDate is greater than *date*.
+ * 
+ * @param {Date} date
+ * @return {Promise} ([Customer])
+ */
+exports.getActiveSince = function (date) {
+  return controller.initializeTable()
+  .then(function (res) { return controller.getActiveSince(date); });
+};
