@@ -7,6 +7,6 @@ BEGIN
   CREATE TABLE [dbo].[{{ table_name }}] (
     [StateID] bigint IDENTITY(1, 1) PRIMARY KEY NOT NULL,
     [DateUpdated] datetime2 NOT NULL DEFAULT GETUTCDATE(),
-    [UpdateMethod] nvarchar NULL DEFAULT 'schedule'
+    [UpdateMethod] nvarchar(1024) NULL DEFAULT 'scheduled'
   )
 END
