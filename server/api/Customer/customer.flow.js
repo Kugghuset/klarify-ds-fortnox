@@ -22,7 +22,9 @@ exports.fetchNewlyModified = function () {
  * Clears the old instance of Customers
  * and downloads all from the Fortnox API.
  * 
- * WARNING: This drops the old Customer table.
+ * WARNING: This drops the old Customer table
+ * and initializes a completely fresh.
+ * This will lose all historical data.
  * 
  * @return {Promise} -> undefined
  */

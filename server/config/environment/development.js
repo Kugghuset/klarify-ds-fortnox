@@ -22,5 +22,9 @@ module.exports = {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     }
+  },
+  server: {
+    port: process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000,
+    ip: process.env.OPENSHIFT_NODEJS_IP || process.env.IP || undefined
   }
 }

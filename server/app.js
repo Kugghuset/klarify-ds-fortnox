@@ -2,9 +2,14 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var express = require('express');
+var app = express();
+
 var config = require('./config/environment/development');
 var appState = require('./app.state');
 var customer = require('./api/Customer/customer');
+
+require('./api/routes')(app);
 
 var dbConfig = {
   "server": config.db.server,
@@ -16,9 +21,22 @@ var dbConfig = {
   }
 };
 
+/**
+ * Starts the express server listening on config.server.port
+ */
+function serve() {
+  var server = app.listen(config.server.port, config.server.ip, function () {
+    var port = server.address().port;
+    
+    console.log('App listening on port %s', port);
+  });
+}
+
+/**
+ * Initializes the state tables and then spins up the server.
+ * 
+ * Add new names as they are created to the array
+ */
 sql.setDefaultConfig(dbConfig);
-
-// Do stuff...
-
-// Add new names as they are created to the array
-appState.initializeTables(['Customer']);
+appState.initializeTables(['Customer'])
+.then(serve);
