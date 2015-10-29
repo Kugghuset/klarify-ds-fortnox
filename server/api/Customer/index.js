@@ -42,13 +42,24 @@ router.get('/getAllActive', function (req, res) {
 });
 
 /**
+ * Gets all customers from the db, includes historical data.
+ * A response with the statuscode 200 containing the customers are returned.
+ */
+router.get('/getAll', function (req, res) {
+  customer.flow.getAll()
+  .then(function (_res) {
+    res.status(200).json(_res);
+  })
+  .catch(handleError);
+});
+
+/**
  * Sends a response with the status code 500
  * 
  * @param {Object} res - express response object
  * @param {Error} err
  */
 function handleError(res, err) {
-  console.log(err);
   res.status(500).send();
 }
 

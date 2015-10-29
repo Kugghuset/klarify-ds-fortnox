@@ -50,9 +50,20 @@ exports.getAllActive = function () {
  * StartDate is greater than *date*.
  * 
  * @param {Date} date
- * @return {Promise} ([Customer])
+ * @return {Promise} -> ([Customer])
  */
 exports.getActiveSince = function (date) {
   return controller.initializeTable()
   .then(function (res) { return controller.getActiveSince(date); });
 };
+
+/**
+ * Gets every customer in the database.
+ * This also returns historical data.
+ * 
+ * @return {Promise} -> ([Customer])
+ */
+exports.getAll = function () {
+  return controller.initializeTable()
+  .then(controller.getAll);
+}
