@@ -1,8 +1,8 @@
 /*
-Drops the StateFortnox table.
+Drops the {{ table_name }} table.
 */
 
-IF (OBJECT_ID('StateFortnox', 'U') IS NOT NULL)
+IF (OBJECT_ID('{{ table_name }}', 'U') IS NOT NULL)
 BEGIN
-  DROP TABLE [dbo].[StateFortnox];
+  DROP TABLE [dbo].[{{ table_name }}];
 END

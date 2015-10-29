@@ -20,3 +20,5 @@ sql.setDefaultConfig(dbConfig);
 
 // Do stuff...
 
+// Add new names as they are created to the array
+appState.initializeTables(['Customer']);

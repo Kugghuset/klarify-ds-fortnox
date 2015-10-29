@@ -2,4 +2,4 @@
 Gets the current state of the application.
 */
 
-SELECT TOP 1 [StateID], [CustomerDateUpdated] FROM [dbo].[StateFortnox] ORDER BY [StateID] DESC;
+SELECT TOP 1 [StateID], [DateUpdated] FROM [dbo].[{{ table_name }}] ORDER BY [StateID] DESC;

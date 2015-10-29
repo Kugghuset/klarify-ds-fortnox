@@ -57,6 +57,52 @@ exports.getCustomers = function (limit) {
 };
 
 /**
+ * Gets all active customers from the db.
+ * 
+ * @return {Promise} -> {[Customer]}
+ */
+exports.getActive = function () {
+  return new Promise(function (resolve, reject) {
+    sql.execute({
+      query: sql.fromFile('./sql/customer.getActive.sql')
+    })
+    .then(function (results) {
+      resolve(results);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+};
+
+/**
+ * Gets all active customers where
+ * StartDate is greater than *date*.
+ * 
+ * @param {Date} date
+ * @return {Promise} -> {[Customer]}
+ */
+exports.getActiveSince = function (date) {
+  return new Promise(function (resolve, reject) {
+    sql.execute({
+      query: sql.fromFile('./sql/customer.getActiveSince.sql'),
+      params: {
+        dateSince: {
+          type: sql.DATETIME2,
+          val: date
+        }
+      }
+    })
+    .then(function (results) {
+      resolve(results);
+    })
+    .catch(function (err) {
+      reject(err);
+    });
+  });
+};
+
+/**
  * Inserts a new row in the Customer table.
  * If no *customer* is non-existent or not
  * 
@@ -181,8 +227,6 @@ exports.updateOrInsert = function updateOrInsert(customers) {
     })
     .then(function () {
       return new Promise(function (resolve, reject) {
-        // Fix this
-        // http://www.purplefrogsystems.com/blog/2012/01/using-t-sql-merge-to-load-data-warehouse-dimensions/
         sql.execute({
           query: sql.fromFile('./sql/customer.merge.sql')
         })
