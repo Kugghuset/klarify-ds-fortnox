@@ -67,14 +67,20 @@ exports.getCurrentState = function getCurrentState(tableName) {
 /**
  * Inserts a new row into the StateFortnox array.
  * 
- * @param {Object} row
  * @param {String} tableName
+ * @param {String} updateMethod - defaults to 'scheduled'
  * @return {Promise} -> undefined
  */
-exports.insertState = function insertState(tableName) {
+exports.insertState = function insertState(tableName, updateMethod) {
   return new Promise(function (resolve, reject) {
     sql.execute({
-      query: sql.fromFile('./sql/app.insertState.sql').replace(/{{ table_name }}/g, 'State' + tableName)
+      query: sql.fromFile('./sql/app.insertState.sql').replace(/{{ table_name }}/g, 'State' + tableName),
+      params: {
+        updateMethod: {
+          type: sql.NVARCHAR(1024),
+          val: updateMethod || 'scheduled'
+        }
+      }
     })
     .then(function (result) {
       resolve(result);
