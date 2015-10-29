@@ -12,7 +12,7 @@ var requestHandler = require('./customer.requestHandler');
  * 
  * @return {Promise} -> undefined
  */
-exports.getNewlyModified = function () {
+exports.fetchNewlyModified = function () {
   return controller.initializeTable()
   .then(requestHandler.getNewlyModified)
   .then(controller.updateOrInsert);
@@ -26,7 +26,7 @@ exports.getNewlyModified = function () {
  * 
  * @return {Promise} -> undefined
  */
-exports.cleanAndDownloadFresh = function () {
+exports.cleanAndFetch = function () {
   return controller.drop()
   .then(controller.initializeTable)
   .then(requestHandler.getAll)
