@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 var spawn = require('child_process').spawn;
 var exec = require('child_process').exec;
+var gexec = require('gulp-exec');
 
 var node; // Will be the node command.
 
@@ -20,6 +21,13 @@ gulp.task('server', function () {
       gulp.log('Error detected, waiting for changes...');
     }
   });
+});
+
+// Updates the table of contents for the README.
+gulp.task('doc', function () {
+  // NOTE: doctoc needs to be installed, see README.md
+  gulp.src('./README.md')
+    .pipe(gexec('doctoc .'));
 });
 
 // Watchers

@@ -2,4 +2,4 @@
 
 // Require every test file in api
 
-var customer = require('./Customer/customer.spec');
+var customer = require('./customer/customer.spec');
