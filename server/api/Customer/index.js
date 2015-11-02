@@ -45,7 +45,7 @@ router.get('/getAllActive', function (req, res) {
  * Gets all customers from the db, includes historical data.
  * A response with the statuscode 200 containing the customers are returned.
  */
-router.get('/getAll', function (req, res) {
+router.get('/', function (req, res) {
   customer.flow.getAll()
   .then(function (_res) {
     res.status(200).json(_res);
