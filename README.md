@@ -47,6 +47,7 @@ git update-index --assume-unchanged userConfig.js
 
 Lastly update `userConfig.js` file to match your setup.
 Note: changes to this file won't be commited as it is in the `.gitignore` file. To ensure you don't have to constantly get new keys, keep a copy of this file outside the repository, so won't lose any local keys when pulling.
+Note: sometimes the file might be reset to the state it is in the repository, for instance resetting to a previous commit or when checkout out another branch based on a remote branch, the local `userConfig.js` file will be reset. This will cause issues when running the `gulp` command, as it won't be able to set the server up.
 
 Here's how I've set mine up:
 
@@ -62,7 +63,6 @@ module.exports = {
   clientSecret: 'cannot_give_these_out' // clientSecret from Fortnox
 };
 ```
-
 
 ### Running the project
 
