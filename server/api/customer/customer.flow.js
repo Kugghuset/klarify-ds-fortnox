@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
 
-var controller = require('./customer.controller');
+var dbHandler = require('./customer.dbHandler');
 var requestHandler = require('./customer.requestHandler');
 
 /**
@@ -13,9 +13,9 @@ var requestHandler = require('./customer.requestHandler');
  * @return {Promise} -> undefined
  */
 exports.fetchNewlyModified = function () {
-  return controller.initializeTable()
+  return dbHandler.initializeTable()
   .then(requestHandler.getNewlyModified)
-  .then(controller.updateOrInsert);
+  .then(dbHandler.updateOrInsert);
 };
 
 /**
@@ -29,10 +29,10 @@ exports.fetchNewlyModified = function () {
  * @return {Promise} -> undefined
  */
 exports.cleanAndFetch = function () {
-  return controller.drop()
-  .then(controller.initializeTable)
+  return dbHandler.drop()
+  .then(dbHandler.initializeTable)
   .then(requestHandler.getAll)
-  .then(controller.insertMany);
+  .then(dbHandler.insertMany);
 }
 
 /**
@@ -41,8 +41,8 @@ exports.cleanAndFetch = function () {
  * @return {Promise} -> ([Customer])
  */
 exports.getAllActive = function () {
-  return controller.initializeTable()
-  .then(controller.getActive);
+  return dbHandler.initializeTable()
+  .then(dbHandler.getActive);
 };
 
 /**
@@ -53,8 +53,8 @@ exports.getAllActive = function () {
  * @return {Promise} -> ([Customer])
  */
 exports.getActiveSince = function (date) {
-  return controller.initializeTable()
-  .then(function (res) { return controller.getActiveSince(date); });
+  return dbHandler.initializeTable()
+  .then(function (res) { return dbHandler.getActiveSince(date); });
 };
 
 /**
@@ -64,6 +64,6 @@ exports.getActiveSince = function (date) {
  * @return {Promise} -> ([Customer])
  */
 exports.getAll = function () {
-  return controller.initializeTable()
-  .then(controller.getAll);
+  return dbHandler.initializeTable()
+  .then(dbHandler.getAll);
 }

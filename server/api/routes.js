@@ -4,5 +4,5 @@
  * @param {Object} app - express instance.
  */
 module.exports = function (app) {
-  app.use('/customer', require('./Customer'))
+  app.use('/customer', require('./customer'))
 };

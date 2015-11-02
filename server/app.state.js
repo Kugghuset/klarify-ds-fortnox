@@ -35,6 +35,10 @@ exports.initializeTables = function initializeTables(tableNames) {
     Promise.settle(_.map(tableNames, exports.initializeTable))
     .then(function (promiseResults) {
       resolve(_.map(promiseResults, function (res) {
+        if (res.isRejected()) {
+          console.log(res.reason());
+        }
+        
         return res.value();
       }));
     })
