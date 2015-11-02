@@ -7,7 +7,9 @@
     - [Running the project](#running-the-project)
     - [Testing](#testing)
     - [Contributing](#contributing)
+      - [Commiting and pull requests](#commiting-and-pull-requests)
       - [Folder structure](#folder-structure)
+      - [Fortnox API docs](#fortnox-api-docs)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -87,6 +89,12 @@ npm test
 
 ### Contributing
 
+#### Commiting and pull requests
+
+Committing straight onto `master` is a no-no. Commits done onto feature specific branches, which then are audited and if it passes can be merge into `master` by an admin. Commits are made on a regular basis when *_the current step is finished_* and Pull Requests are made *when the current feature is finished*.
+
+Commmit messages should be concise and written in futurum, which means a commit which has added a GET request to the Customer endpoint on the Fortnox API would be something like: `Add GET request to Customer endpoint`.
+
 #### Folder structure
 
 ```
@@ -120,3 +128,11 @@ Database calls are handled from the `<endpoint>.dbHandler.js`, which is done thr
 The `<endpoint>.flow.js` wraps the `requestHandler` and `dbHandler` together and is what's used in the `index.js` file.
 
 Tests are written in the `<endpoint>.spec.js` file.
+
+#### Fortnox API docs
+
+The [documentation can be found at here](http://developer.fortnox.se/documentation/), and the endpoints are listed under *RESOURCES* we're currently  interested of the _List of all RESOURCE>_. In each resource under the heading *Properties* each property and it's type can be found. These are of interest for when setting the `<endpoint>.initializeTable.sql` as they have expected data types and max length.
+
+What's noted as `string, 1024 characters` in the docs is in T-SQL am `nvarchar(1024)` and in JavaScript via Seriate `sql.NVARCHAR(1024)`. On properties where the max length is left out, it's assumed to be the max length, which in T-SQL would be `nvarchar(max)` and in JavaScript just `sql.NVARCHAR`.
+
+NOTE: Not all properties exists in the list download we use, so make sure to reference the properties with the example return from the API call earlier on the page.
