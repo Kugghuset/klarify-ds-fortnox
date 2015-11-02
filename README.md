@@ -91,9 +91,8 @@ npm test
 
 ```
 api
-└───Customer
-    ├───customer.js
-    ├───customer.controller.js
+└───customer
+    ├───customer.dbHandler.js
     ├───customer.flow.js
     ├───customer.requestHandler.js
     ├───customer.spec.js
@@ -113,3 +112,11 @@ api
 ```
 
 Every folder in the `api` directory should contain an index.js file, which handles the incoming requests for that specific endpoint. I.E. all `<base_url>/customer/` is handled by the index.js file in the customer folder.
+
+External API calls are handled in the `<endpoint>.requestHandler.js` file, I.E. this is were data is fetched from the Fortnox API. Paginated results are handled via recursion, which can be seen in the `getAll()` or `getNewlyModified()` functions in `customer.requestHandler.js`.
+
+Database calls are handled from the `<endpoint>.dbHandler.js`, which is done through [Seriate](https://github.com/LeanKit-Labs/seriate) and plain T-SQL files in the `<endpoint>/sql` folder. The `.sql` files name's should match the corresponding method in `dbHandler` prefixed with the `<endpoint>` and possibly `.temp` if if it's for the temp table. E.G. in customer, the function `getActive()` has the corresponding file `./sql/customer.getActive.sql`.
+
+The `<endpoint>.flow.js` wraps the `requestHandler` and `dbHandler` together and is what's used in the `index.js` file.
+
+Tests are written in the `<endpoint>.spec.js` file.
