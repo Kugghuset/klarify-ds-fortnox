@@ -3,14 +3,14 @@
 var express = require('express');
 var router = express.Router();
 
-var customer = require('./customer');
+var flow  = require('./customer.flow');
 
 /**
  * Triggers the cleanAndFetch flow method.
  * If successful, a response with the statuscode 200.
  */
 router.get('/cleanAndFetch', function (req, res) {
-  customer.flow.cleanAndFetch()
+  flow.cleanAndFetch()
   .then(function (_res) {
     res.status(200).send('Database cleaned and all customers fetched.');
   })
@@ -22,7 +22,7 @@ router.get('/cleanAndFetch', function (req, res) {
  * If successful, a response with the statuscode 200.
  */
 router.get('/fetchNewlyModified', function (req, res) {
-  customer.flow.fetchNewlyModified()
+  flow.fetchNewlyModified()
   .then(function (_res) {
     res.status(200).send('Newly modifified customers fetched.');
   })
@@ -34,7 +34,7 @@ router.get('/fetchNewlyModified', function (req, res) {
  * A response with the statuscode 200 containing the customers are returned.
  */
 router.get('/getAllActive', function (req, res) {
-  customer.flow.getAllActive()
+  flow.getAllActive()
   .then(function (_res) {
     res.status(200).json(_res);
   })
@@ -46,7 +46,7 @@ router.get('/getAllActive', function (req, res) {
  * A response with the statuscode 200 containing the customers are returned.
  */
 router.get('/', function (req, res) {
-  customer.flow.getAll()
+  flow.getAll()
   .then(function (_res) {
     res.status(200).json(_res);
   })

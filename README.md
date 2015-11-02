@@ -88,8 +88,9 @@ npm test
 ### Contributing
 
 #### Folder structure
+
 ```
-API
+api
 └───Customer
     ├───customer.js
     ├───customer.controller.js
@@ -110,3 +111,5 @@ API
         ├───customer.temp.initialize.sql
         └───customer.temp.insertOne.sql
 ```
+
+Every folder in the `api` directory should contain an index.js file, which handles the incoming requests for that specific endpoint. I.E. all `<base_url>/customer/` is handled by the index.js file in the customer folder.

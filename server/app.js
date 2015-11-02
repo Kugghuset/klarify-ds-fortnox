@@ -7,7 +7,6 @@ var app = express();
 
 var config = require('./config/environment/development');
 var appState = require('./app.state');
-var customer = require('./api/customer/customer');
 
 require('./api/routes')(app);
 
