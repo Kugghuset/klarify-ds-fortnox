@@ -1,5 +1,10 @@
 'use strict'
 
+/**
+ * The database handler for the customer route.
+ * It is the interface between the T-SQL code and the requests.
+ */
+
 var _ = require('lodash');
 var sql = require('seriate');
 var Promise = require('bluebird');

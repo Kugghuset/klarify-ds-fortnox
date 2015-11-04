@@ -11,8 +11,8 @@
       - [Folder structure](#folder-structure)
       - [Fortnox API docs](#fortnox-api-docs)
       - [Resources of interest](#resources-of-interest)
-        - [Resources in use](#resources-in-use)
-        - [Resources to use](#resources-to-use)
+        - [Implemented resources](#implemented-resources)
+        - [Resources to implement](#resources-to-implement)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
