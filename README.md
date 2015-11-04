@@ -163,3 +163,5 @@ These are the resources from Fortnox which is not implemented yet.
 - [Suppliers](http://developer.fortnox.se/documentation/resources/suppliers/)
 - [Supplier Invoices](http://developer.fortnox.se/documentation/resources/supplier-invoices/)
 - [Supplier Invoice Payments](http://developer.fortnox.se/documentation/resources/supplier-invoice-payments/) 
+- [Voucer Seriers](http://developer.fortnox.se/documentation/resources/voucher-series/)
+- [Vouchers](http://developer.fortnox.se/documentation/resources/vouchers/)
