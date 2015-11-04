@@ -1,5 +1,10 @@
 'use strict'
 
+/**
+ * The request handler file for the customer route.
+ * This is where requests to the Fortnox API are made.
+ */
+
 var _ = require('lodash');
 var Promise = require('bluebird');
 var request = require('request');

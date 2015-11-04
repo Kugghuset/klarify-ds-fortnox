@@ -10,6 +10,9 @@
       - [Commiting and pull requests](#commiting-and-pull-requests)
       - [Folder structure](#folder-structure)
       - [Fortnox API docs](#fortnox-api-docs)
+      - [Resources of interest](#resources-of-interest)
+        - [Implemented resources](#implemented-resources)
+        - [Resources to implement](#resources-to-implement)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -131,8 +134,34 @@ Tests are written in the `<endpoint>.spec.js` file.
 
 #### Fortnox API docs
 
-The [documentation can be found at here](http://developer.fortnox.se/documentation/), and the endpoints are listed under *RESOURCES* we're currently  interested of the _List of all RESOURCE>_. In each resource under the heading *Properties* each property and it's type can be found. These are of interest for when setting the `<endpoint>.initializeTable.sql` as they have expected data types and max length.
+The [documentation can be found at here](http://developer.fortnox.se/documentation/), and the endpoints are listed under *RESOURCES*, the list of which these can be found below. We're currently interested of the _List of all RESOURCE>_, which would be the `https://api.fortnox.se/3/<RESOURCE_NAME>` request. In each resource under the heading *Properties* each property and it's type can be found. These are of interest for when setting the `<endpoint>.initializeTable.sql` as they have expected data types and max length.
+
+NOTE: As we are interested in the JSON formatted data, the headers should containg `'Content-Type': 'application/json'` and `'Accept': 'application/json'`, which is set in `config/environment/development.js`.
 
 What's noted as `string, 1024 characters` in the docs is in T-SQL am `nvarchar(1024)` and in JavaScript via Seriate `sql.NVARCHAR(1024)`. On properties where the max length is left out, it's assumed to be the max length, which in T-SQL would be `nvarchar(max)` and in JavaScript just `sql.NVARCHAR`.
 
 NOTE: Not all properties exists in the list download we use, so make sure to reference the properties with the example return from the API call earlier on the page.
+
+#### Resources of interest
+
+When a resource is implemented, make sure to move it from *Resources to implement* to *Implemented resources*.
+
+##### Implemented resources
+
+Resources which are already implemented and functional.
+
+ - [Customers](http://developer.fortnox.se/documentation/resources/customers/)
+
+##### Resources to implement
+
+These are the resources from Fortnox which is not implemented yet.
+
+- [Accounts](http://developer.fortnox.se/documentation/resources/accounts/)
+- [Cost Centers](http://developer.fortnox.se/documentation/resources/cost-centers/)
+- [Invoices](http://developer.fortnox.se/documentation/resources/invoices/)
+- [Invoices Payments](http://developer.fortnox.se/documentation/resources/invoice-payments/)
+- [Suppliers](http://developer.fortnox.se/documentation/resources/suppliers/)
+- [Supplier Invoices](http://developer.fortnox.se/documentation/resources/supplier-invoices/)
+- [Supplier Invoice Payments](http://developer.fortnox.se/documentation/resources/supplier-invoice-payments/) 
+- [Voucer Seriers](http://developer.fortnox.se/documentation/resources/voucher-series/)
+- [Vouchers](http://developer.fortnox.se/documentation/resources/vouchers/)

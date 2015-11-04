@@ -1,5 +1,11 @@
 'use strict'
 
+/**
+ * The flow file for the customer route.
+ * This is where the dbHandler and requestHandler can communicate
+ * and is what the index file can and should have access to.
+ */
+
 var _ = require('lodash');
 var Promise = require('bluebird');
 

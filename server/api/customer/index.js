@@ -1,5 +1,11 @@
 'use strict'
 
+/**
+ * The index file for the customer route.
+ * This is were incoming requests are handled.
+ * Requests should be purely based on the flow methods.
+ */
+
 var express = require('express');
 var router = express.Router();
 
