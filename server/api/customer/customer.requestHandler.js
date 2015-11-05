@@ -12,6 +12,7 @@ var request = require('request');
 var config = require('../../config/environment/development');
 var appState = require('../../app.state');
 var util = require('../../utils/fortnox.util');
+var logger = require('../../utils/logger.util');
 
 var fortnoxCustomerUrl = 'https://api.fortnox.se/3/customers/';
 
@@ -46,8 +47,10 @@ function getPage(url) {
         reject(err); // Something went wrong with the request...
       } else {
         try {
+          logger.stream.write('customer.getPage ' + url + ' resolved')
           resolve(JSON.parse(body));
         } catch (error) {
+          logger.stream.write('customer.getPage ' + url + ' rejected')
           reject(err);
         }
       }
@@ -78,9 +81,11 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
       // Actual return of the function
       appState.setUpdated('Customer')
       .then(function () {
+        logger.stream.write('customer.getAll resolved')
         resolve(customers); // This is returned.
       })
       .catch(function (err) {
+        logger.stream.write('customer.getAll rejected')
         reject(err);
       });
     });
@@ -123,13 +128,14 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
   // Check if it's finished
   if (currentPage >= lastPage) {
     return new Promise(function (resolve, reject) {
-      resolve(customers)
       // Actual return of the function
       appState.setUpdated('Customer')
       .then(function (rs) {
+        logger.stream.write('customer.getNewlyModified (' + lastUpdated + ') resolved')
         resolve(customers) // This is the return
       })
       .catch(function (err) {
+        logger.stream.write('customer.getNewlyModified (' + lastUpdated + ') rejected')
         reject(err);
       });
     });
@@ -145,7 +151,7 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
     appState.getCurrentState('Customer')
     .then(function (currentState) {
       if (currentState[0] !== null && typeof currentState[0] === 'object') {
-        resolve(currentState[0].Customer);
+        resolve(currentState[0].DateUpdated);
       } else {
         // There is no lastUpdated, but it's not date last updated
         resolve(null);
@@ -174,6 +180,7 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
       lastPage = res.MetaInformation['@TotalPages'];
     }
     
+    console.log(lastUpdated);
     // Recursion!
     return getNewlyModified(customers.concat(res.Customers), currentPage, lastPage, lastUpdated);
   });
