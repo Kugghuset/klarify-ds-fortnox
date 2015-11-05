@@ -47,10 +47,10 @@ function getPage(url) {
         reject(err); // Something went wrong with the request...
       } else {
         try {
-          logger.stream.write('customer.getPage ' + url + ' resolved')
+          logger.stream.write('customer.getPage ' + url + ' resolved');
           resolve(JSON.parse(body));
         } catch (error) {
-          logger.stream.write('customer.getPage ' + url + ' rejected')
+          logger.stream.write('customer.getPage ' + url + ' rejected');
           reject(err);
         }
       }
@@ -81,11 +81,11 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
       // Actual return of the function
       appState.setUpdated('Customer')
       .then(function () {
-        logger.stream.write('customer.getAll resolved')
+        logger.stream.write('customer.getAll resolved');
         resolve(customers); // This is returned.
       })
       .catch(function (err) {
-        logger.stream.write('customer.getAll rejected')
+        logger.stream.write('customer.getAll rejected');
         reject(err);
       });
     });
@@ -131,11 +131,11 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
       // Actual return of the function
       appState.setUpdated('Customer')
       .then(function (rs) {
-        logger.stream.write('customer.getNewlyModified (' + lastUpdated + ') resolved')
+        logger.stream.write('customer.getNewlyModified (' + lastUpdated + ') resolved');
         resolve(customers) // This is the return
       })
       .catch(function (err) {
-        logger.stream.write('customer.getNewlyModified (' + lastUpdated + ') rejected')
+        logger.stream.write('customer.getNewlyModified (' + lastUpdated + ') rejected');
         reject(err);
       });
     });
