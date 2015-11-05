@@ -32,7 +32,7 @@ Clone the repository using Git (if you don't have Git on your computer, [here's 
 git clone git@github.com:Kugghuset/klarify-ds-fortnox.git
 ```
 
-If you don't have [Gulp](http://gulpjs.com/), [Express](http://expressjs.com/), [Mocha](http://mochajs.org/) or [DocToc](https://github.com/thlorenz/doctoc), install them via npm, using the `-g` flag (meanings it's a global install).
+If you don't have [Gulp](http://gulpjs.com/), [Express](http://expressjs.com/), [Mocha](http://mochajs.org/) or [DocToc](https://github.com/thlorenz/doctoc), install them via npm, using the `-g` flag (to install them globally).
 
 ```
 npm install -g gulp express mocha doctoc
@@ -71,13 +71,16 @@ module.exports = {
 
 ### Running the project
 
-You'll need a Microsoft Sequel Server running somewhere. I've got mine setup via [SQL Server Management Studio](https://msdn.microsoft.com/library/mt238290.aspx).
+You'll need a Microsoft SQL Server running somewhere. I've got mine setup via [SQL Server Management Studio](https://msdn.microsoft.com/library/mt238290.aspx).
 
 When the server is up and running, assuming you're done setting up, simply run:
 
 ```
 gulp
 ```
+
+The project itself is only a service, and will on startup only spin up a service open for http requests. I use [Postman](https://www.getpostman.com/) for mocking requests to the service, and requests are made to `<url>/<endpoint>/<action>`. For instance, if I'm running the server on `http://localhost:3000` and wanted to fetch newly modified, I'd make a ´GET´ request to `http://localhost:3000/customer/fetchNewlyModified`. This can of course be done straight in any web browser, but Postman formats the output and makes it more readable.
+
 
 ### Testing
 
