@@ -239,6 +239,7 @@ exports.insertMany = function insertMany(customers, isTemp, inserted) {
  * Updates existing but changed custumers and inserts new customers
  * into the customer table.
  * 
+ * @param {Array} ([Customer])
  * @return {Promise} -> undefined
  */
 exports.updateOrInsert = function updateOrInsert(customers) {
@@ -268,8 +269,6 @@ exports.updateOrInsert = function updateOrInsert(customers) {
       });
     })
     .then(function () {
-      resolve('');
-      
       logger.stream.write('customer.updateOrInsert resolved');
       
       exports.drop(true)
