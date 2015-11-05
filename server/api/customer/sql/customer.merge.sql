@@ -73,11 +73,6 @@ FROM (
       , [Source].[Phone]
       , [Source].[ZipCode]
     )
-  WHEN NOT MATCHED BY SOURCE AND [Target].[IsCurrent] = 1
-    THEN UPDATE SET
-        [IsCurrent] = 0
-      , [EndDate] = GETUTCDATE()
-      , [LastUpdated] = GETUTCDATE()
   OUTPUT $action AS [Action]
     , [Source].*
   ) AS [MergeOutput]

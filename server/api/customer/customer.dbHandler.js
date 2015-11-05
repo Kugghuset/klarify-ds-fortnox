@@ -29,7 +29,7 @@ exports.initializeTable = function (isTemp) {
       query: sql.fromFile(sqlFile)
     })
     .then(function (results) {
-      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.initializeTable resolved.')
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.initializeTable resolved.');
       resolve(results);
     })
     .catch(function (err) {
@@ -57,11 +57,11 @@ exports.getAll = function (limit) {
       }
     })
     .then(function (results) {
-      logger.stream.write('customer.getAll resolved.')
+      logger.stream.write('customer.getAll resolved.');
       resolve(results);
     })
     .catch(function (err) {
-      logger.stream.write('customer.getAll rejected.')
+      logger.stream.write('customer.getAll rejected.');
       reject(err);
     });
   });
@@ -78,11 +78,11 @@ exports.getActive = function () {
       query: sql.fromFile('./sql/customer.getActive.sql')
     })
     .then(function (results) {
-      logger.stream.write('customer.getActive resolved.')
+      logger.stream.write('customer.getActive resolved.');
       resolve(results);
     })
     .catch(function (err) {
-      logger.stream.write('customer.getActive rejected.')
+      logger.stream.write('customer.getActive rejected.');
       reject(err);
     });
   });
@@ -107,11 +107,11 @@ exports.getActiveSince = function (date) {
       }
     })
     .then(function (results) {
-      logger.stream.write('customer.getActiveSince ' + date.toISOString() + ' resolved.')
+      logger.stream.write('customer.getActiveSince ' + date.toISOString() + ' resolved.');
       resolve(results);
     })
     .catch(function (err) {
-      logger.stream.write('customer.getActiveSince ' + date.toISOString() + ' rejected.')
+      logger.stream.write('customer.getActiveSince ' + date.toISOString() + ' rejected.');
       reject(err);
     });
   });
@@ -129,7 +129,7 @@ exports.insertOne = function (customer, isTemp) {
   return new Promise(function (resolve, reject) {
     if (!customer || typeof customer !== 'object') {
       // return early if no customer is present.
-      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' rejected')
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' rejected');
       return reject(new TypeError('Customer must be of type "object"'));
     }
     
@@ -183,11 +183,11 @@ exports.insertOne = function (customer, isTemp) {
       }
     })
     .then(function (result) {
-      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' resolved.')
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' resolved.');
       resolve(result);
     })
     .catch(function (err) {
-      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' rejected.')
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' rejected.');
       reject(err);
     });
   });
@@ -205,14 +205,14 @@ exports.insertMany = function insertMany(customers, isTemp, inserted) {
   // Set *inserted* to an empty array if it's undefined
   if (!inserted) {
     inserted = [];
-    logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany started.')
+    logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany started.');
   }
   
     // Return if the recursion is finished.
     if (customers.length === inserted.length) {
       // SQL INSERTs returns undefined, change this?
       return new Promise(function (resolve, reject) {
-        logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany resolved.')
+        logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany resolved.');
         resolve(inserted.length);
       });
     }
@@ -229,7 +229,7 @@ exports.insertMany = function insertMany(customers, isTemp, inserted) {
     })
     .catch(function (err) {
       return new Promise(function (resolve, reject) {
-        logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany rejected.')
+        logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany rejected.');
         reject(err);
       });
     });
@@ -239,6 +239,7 @@ exports.insertMany = function insertMany(customers, isTemp, inserted) {
  * Updates existing but changed custumers and inserts new customers
  * into the customer table.
  * 
+ * @param {Array} ([Customer])
  * @return {Promise} -> undefined
  */
 exports.updateOrInsert = function updateOrInsert(customers) {
@@ -262,15 +263,13 @@ exports.updateOrInsert = function updateOrInsert(customers) {
         })
         .catch(function (err) {
           
-          logger.stream.write('customer.updateOrInsert rejected')
+          logger.stream.write('customer.updateOrInsert rejected');
           reject(err);
         });
       });
     })
     .then(function () {
-      resolve('');
-      
-      logger.stream.write('customer.updateOrInsert resolved')
+      logger.stream.write('customer.updateOrInsert resolved');
       
       exports.drop(true)
       .then(resolve);
@@ -297,11 +296,11 @@ exports.disable = function (customerID) {
       }
     })
     .then(function (result) {
-      logger.stream.write('customer.disable ' + customerID + ' resolved')
+      logger.stream.write('customer.disable ' + customerID + ' resolved');
       resolve(result);
     })
     .catch(function (err) {
-      logger.stream.write('customer.disable ' + customerID + ' rejected')
+      logger.stream.write('customer.disable ' + customerID + ' rejected');
       reject(err);
     });
   });
@@ -325,11 +324,11 @@ exports.drop = function (isTemp) {
       query: sql.fromFile(sqlFile)
     })
     .then(function (result) {
-      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.drop resolved')
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.drop resolved');
       resolve(result);
     })
     .catch(function (err) {
-      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.drop rejected')
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.drop rejected');
       reject(err);
     });
   });
