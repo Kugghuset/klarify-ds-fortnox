@@ -2,13 +2,16 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var morgan = require('morgan');
 var express = require('express');
 var app = express();
 
 var config = require('./config/environment/development');
 var appState = require('./app.state');
+var logger = require('./utils/logger.util');
 
-require('./api/routes')(app);
+app.use(morgan('combined', { stream: logger.stream }));
+require('./api/routes')(app, logger);
 
 var dbConfig = {
   "server": config.db.server,
@@ -27,7 +30,7 @@ function serve() {
   var server = app.listen(config.server.port, config.server.ip, function () {
     var port = server.address().port;
     
-    console.log('App listening on port %s', port);
+    logger.stream.write('App listening on port ' + port);
   });
 }
 

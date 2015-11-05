@@ -9,6 +9,8 @@ var _ = require('lodash');
 var sql = require('seriate');
 var Promise = require('bluebird');
 
+var logger = require('../../utils/logger.util');
+
 /**
  * Runs the init script for the model,
  * adding the table to the SQL database if it's non-existent.
@@ -27,9 +29,11 @@ exports.initializeTable = function (isTemp) {
       query: sql.fromFile(sqlFile)
     })
     .then(function (results) {
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.initializeTable resolved.')
       resolve(results);
     })
     .catch(function (err) {
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.initializeTable rejected.');
       reject(err);
     });
   });
@@ -53,9 +57,11 @@ exports.getAll = function (limit) {
       }
     })
     .then(function (results) {
+      logger.stream.write('customer.getAll resolved.')
       resolve(results);
     })
     .catch(function (err) {
+      logger.stream.write('customer.getAll rejected.')
       reject(err);
     });
   });
@@ -72,9 +78,11 @@ exports.getActive = function () {
       query: sql.fromFile('./sql/customer.getActive.sql')
     })
     .then(function (results) {
+      logger.stream.write('customer.getActive resolved.')
       resolve(results);
     })
     .catch(function (err) {
+      logger.stream.write('customer.getActive rejected.')
       reject(err);
     });
   });
@@ -99,9 +107,11 @@ exports.getActiveSince = function (date) {
       }
     })
     .then(function (results) {
+      logger.stream.write('customer.getActiveSince ' + date.toISOString() + ' resolved.')
       resolve(results);
     })
     .catch(function (err) {
+      logger.stream.write('customer.getActiveSince ' + date.toISOString() + ' rejected.')
       reject(err);
     });
   });
@@ -119,6 +129,7 @@ exports.insertOne = function (customer, isTemp) {
   return new Promise(function (resolve, reject) {
     if (!customer || typeof customer !== 'object') {
       // return early if no customer is present.
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' rejected')
       return reject(new TypeError('Customer must be of type "object"'));
     }
     
@@ -172,14 +183,15 @@ exports.insertOne = function (customer, isTemp) {
       }
     })
     .then(function (result) {
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' resolved.')
       resolve(result);
     })
     .catch(function (err) {
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertOne ' + customer.CustomerNumber + ' rejected.')
       reject(err);
     });
   });
 };
-
 /**
  * Recursively inserts one or many customers into the Customer table.
  * This is achieved by inserting them one by one.
@@ -191,12 +203,16 @@ exports.insertOne = function (customer, isTemp) {
  */
 exports.insertMany = function insertMany(customers, isTemp, inserted) {
   // Set *inserted* to an empty array if it's undefined
-  if (!inserted) { inserted = []; }
+  if (!inserted) {
+    inserted = [];
+    logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany started.')
+  }
   
     // Return if the recursion is finished.
     if (customers.length === inserted.length) {
       // SQL INSERTs returns undefined, change this?
       return new Promise(function (resolve, reject) {
+        logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany resolved.')
         resolve(inserted.length);
       });
     }
@@ -210,6 +226,12 @@ exports.insertMany = function insertMany(customers, isTemp, inserted) {
     })
     .then(function (result) {
       return insertMany(customers, isTemp, inserted.concat([lastInserted]));
+    })
+    .catch(function (err) {
+      return new Promise(function (resolve, reject) {
+        logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.insertMany rejected.')
+        reject(err);
+      });
     });
 };
 
@@ -239,16 +261,21 @@ exports.updateOrInsert = function updateOrInsert(customers) {
           resolve(result);
         })
         .catch(function (err) {
+          
+          logger.stream.write('customer.updateOrInsert rejected')
           reject(err);
         });
       });
     })
     .then(function () {
       resolve('');
+      
+      logger.stream.write('customer.updateOrInsert resolved')
+      
       exports.drop(true)
       .then(resolve);
     });
-    
+
   });
 }
 
@@ -270,9 +297,11 @@ exports.disable = function (customerID) {
       }
     })
     .then(function (result) {
+      logger.stream.write('customer.disable ' + customerID + ' resolved')
       resolve(result);
     })
     .catch(function (err) {
+      logger.stream.write('customer.disable ' + customerID + ' rejected')
       reject(err);
     });
   });
@@ -296,9 +325,11 @@ exports.drop = function (isTemp) {
       query: sql.fromFile(sqlFile)
     })
     .then(function (result) {
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.drop resolved')
       resolve(result);
     })
     .catch(function (err) {
+      logger.stream.write((isTemp ? '(temp) ' : '') + 'customer.drop rejected')
       reject(err);
     });
   });
