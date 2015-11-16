@@ -15,4 +15,5 @@
  */
 module.exports = function (app) {
   app.use('/customer', require('./customer'));
+  app.use('/account', require('./account'));
 };

@@ -19,7 +19,7 @@ var dbConfig = {
   "password": config.db.password,
   "database": config.db.database,
   "options": {
-    "encrypt": false
+    "encrypt": true
   }
 };
 
