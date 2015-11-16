@@ -5,6 +5,8 @@
 - [klarify-ds-fortnox](#klarify-ds-fortnox)
     - [Setting up the project](#setting-up-the-project)
     - [Running the project](#running-the-project)
+    - [Usage](#usage)
+      - [Available routes](#available-routes)
     - [Testing](#testing)
     - [Contributing](#contributing)
       - [Commiting and pull requests](#commiting-and-pull-requests)
@@ -79,8 +81,27 @@ When the server is up and running, assuming you're done setting up, simply run:
 gulp
 ```
 
+### Usage
+
 The project itself is only a service, and will on startup only spin up a service open for http requests. I use [Postman](https://www.getpostman.com/) for mocking requests to the service, and requests are made to `<url>/<endpoint>/<action>`. For instance, if I'm running the server on `http://localhost:3000` and wanted to fetch newly modified, I'd make a ´GET´ request to `http://localhost:3000/customer/fetchNewlyModified`. This can of course be done straight in any web browser, but Postman formats the output and makes it more readable.
 
+The resources are in singular, whereby you simply replace `<resource>` with for instance `customer` and `<baseurl>` with in my case `http://localhost`. So, if I want all customers, including historical data, I'd make a GET request to `http://localhost:3000/customer/` and I can expect a JSON response containing an array of all customers in the db.
+
+#### Available routes
+
+```
+GET: <baseurl>:3000/<resource>/
+  -> Gets all <resource>s from the db, includes historical data.
+
+GET: <baseurl>:3000/<resource>/getAllActive
+  -> Gets all active <resource>s from the db
+
+GET: <baseurl>:3000/<resource>/fetchNewlyModified
+  -> Triggers the fetchNewlyModified flow method for the <resource>
+
+GET: <baseurl>:3000/<resource>/cleanAndFetch
+  -> Triggers the cleanAndFetch flow method for the <resource>
+```
 
 ### Testing
 
