@@ -20,7 +20,8 @@ module.exports = {
       'Access-Token': process.env.accessToken || userConfig.accessToken || '<access-token_from_fortnox>',
       'Client-Secret': process.env.clientSecret || userConfig.clientSecret || '<client-secret_from_fortnox>',
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      'Connection':'keep-alive'
     }
   },
   server: {

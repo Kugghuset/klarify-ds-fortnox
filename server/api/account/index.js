@@ -12,6 +12,18 @@ var router = express.Router();
 var flow  = require('./account.flow.js');
 
 /**
+ * Triggers the cleanAndFetch flow method.
+ * If successful, a response with the statuscode 200.
+ */
+router.get('/cleanAndFetch', function (req, res) {
+    flow.cleanAndFetch()
+        .then(function (_res) {
+            res.status(200).send('Database cleaned and all accounts fetched.');
+        })
+        .catch(handleError);
+});
+
+/**
  * Gets all account from the db, includes historical data.
  * A response with the statuscode 200 containing the customers are returned.
  */

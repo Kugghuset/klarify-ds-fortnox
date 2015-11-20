@@ -1,47 +1,43 @@
 /*
-Slowly Changing Dimensions for the Customer table.
-This merges from TempCustomer into Customer,
+Slowly Changing Dimensions for the Supplier table.
+This merges from TempSupplier into Supplier,
 and upon change disables the old row and inserts a new row.
 */
 
 
-INSERT INTO [dbo].[Customer] (
+
+INSERT INTO [dbo].[Supplier] (
     [@url]
-  , [Address1]
-  , [Address2]
   , [City]
-  , [CustomerNumber]
   , [Email]
   , [Name]
   , [OrganisationNumber]
   , [Phone]
+  , [SupplierNumber]
   , [ZipCode]
   )
 SELECT
     [@url]
-  , [Address1]
-  , [Address2]
   , [City]
-  , [CustomerNumber]
   , [Email]
   , [Name]
   , [OrganisationNumber]
   , [Phone]
+  , [SupplierNumber]
   , [ZipCode]
 FROM (
-  MERGE [dbo].[Customer] AS [Target]
-  USING [dbo].[TempCustomer] AS [Source]
-    ON [Target].CustomerNumber = [Source].CustomerNumber
+  MERGE [dbo].[Supplier] AS [Target]
+  USING [dbo].[TempSupplier] AS [Source]
+    ON [Target].SupplierNumber = [Source].SupplierNumber
     AND [Target].IsCurrent = 1
   WHEN MATCHED AND (
       [Target].[@url] != [Source].[@url]
-   OR [Target].[Address1] != [Source].[Address1]
-   OR [Target].[Address2] != [Source].[Address2]
    OR [Target].[City] != [Source].[City]
    OR [Target].[Email] != [Source].[Email]
    OR [Target].[Name] != [Source].[Name]
    OR [Target].[OrganisationNumber] != [Source].[OrganisationNumber]
    OR [Target].[Phone] != [Source].[Phone]
+   OR [Target].[SupplierNumber] != [Source].[SupplierNumber]
    OR [Target].[ZipCode] != [Source].[ZipCode]
     )
     THEN UPDATE SET
@@ -51,30 +47,26 @@ FROM (
   WHEN NOT MATCHED BY TARGET
     THEN INSERT (
         [@url]
-      , [Address1]
-      , [Address2]
       , [City]
-      , [CustomerNumber]
       , [Email]
       , [Name]
       , [OrganisationNumber]
       , [Phone]
+      , [SupplierNumber]
       , [ZipCode]
     ) VALUES (
         [Source].[@url]
-      , [Source].[Address1]
-      , [Source].[Address2]
       , [Source].[City]
-      , [Source].[CustomerNumber]
       , [Source].[Email]
       , [Source].[Name]
       , [Source].[OrganisationNumber]
       , [Source].[Phone]
+      , [Source].[SupplierNumber]
       , [Source].[ZipCode]
     )
   OUTPUT $action AS [Action]
     , [Source].*
   ) AS [MergeOutput]
     WHERE [MergeOutput].[Action] = 'Update'
-    AND [CustomerNumber] IS NOT NULL
+    AND [SupplierNumber] IS NOT NULL
 ;

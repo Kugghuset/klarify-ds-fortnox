@@ -57,12 +57,171 @@ exports.getAll = function (limit) {
             }
         })
             .then(function (results) {
-                logger.stream.write('customer.getAll resolved.');
+                logger.stream.write('account.getAll resolved.');
                 resolve(results);
             })
             .catch(function (err) {
-                logger.stream.write('customer.getAll rejected.');
+                logger.stream.write('account.getAll rejected.');
                 reject(err);
             });
     });
+};
+
+/**
+ * Drops the Accounts table.
+ * Should really never be used?
+ *
+ * @param {Bool} isTemp - optional
+ * @return {Promise} -> undefined
+ */
+exports.drop = function (isTemp) {
+    return new Promise(function (resolve, reject) {
+
+        var sqlFile = isTemp
+            ? './sql/account.temp.drop.sql'
+            : './sql/account.drop.sql';
+
+        sql.execute({
+            query: sql.fromFile(sqlFile)
+        })
+            .then(function (result) {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.drop resolved');
+                resolve(result);
+
+            })
+            .catch(function (err) {
+                console.log("22222")
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.drop rejected');
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Inserts a new row in the Accounts table.
+ * If no *customer* is non-existent or not
+ *
+ * @param {Object} account
+ * @param {Bool} isTemp - optional
+ * @return {Promise} -> undefined
+ */
+exports.insertOne = function (account, isTemp) {
+    return new Promise(function (resolve, reject) {
+        if (!account || typeof account !== 'object') {
+            // return early if no account is present.
+            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertOne ' + account.Number+ ' rejected');
+            return reject(new TypeError('Account must be of type "object"'));
+        }
+
+        var sqlFile = isTemp
+            ? './sql/account.temp.insertOne.sql'
+            : './sql/account.insertOne.sql';
+
+        sql.execute({
+            query: sql.fromFile(sqlFile),
+            params: {
+                url: {
+                    type: sql.NVARCHAR,
+                    val: account['@url']
+                },
+                Active: {
+                    type: sql.BIT,
+                    val: account.Active
+                },
+                Description: {
+                    type: sql.NVARCHAR(200),
+                    val: account.Description
+                },
+                Number: {
+                    type: sql.INT,
+                    val: account.Number
+                },
+                SRU: {
+                    type: sql.INT,
+                    val: account.SRU
+                },
+                Year: {
+                    type: sql.INT,
+                    val: account.Year
+                }
+            }
+        })
+            .then(function (result) {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertOne ' + account.Number + ' resolved.');
+                resolve(result);
+            })
+            .catch(function (err) {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertOne ' + account.Number + ' rejected.');
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Recursively inserts one or many accounts into the Account table.
+ * This is achieved by inserting them one by one.
+ *
+ * @param {Array} accounts ([Accounts])
+ * @param {Bool} isTemp - optional
+ * @param {Array} inserted ([Account]) - used for recursion, don't set.
+ * @return {Promise} -> undefined
+ */
+exports.insertMany = function insertMany(accounts, isTemp, inserted) {
+
+  /*  var accountArray=[];
+    accounts.forEach(function(account){
+        accountArray.push([account['@url'],account['Active'],account['Description'],account['Number'],account['SRU'],account['Year']])
+    });
+    console.log("accounts")
+    console.log(accountArray.length)
+    console.log(accountArray[100])
+    var sqlFile ='./sql/account.bulkInsert.sql';
+
+    sql.execute({
+        query: sql.fromFile(sqlFile),
+        params:{accountArray:accountArray}
+
+
+    }).then(function (result) {
+            console.log("SUCCESS")
+            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.bulkInsert resolved.');
+            resolve(result);
+        })
+        .catch(function (err) {
+            console.log("Error")
+            console.log(err)
+            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.bulkInsert  rejected.');
+            reject(err);
+        });*/
+    // Set *inserted* to an empty array if it's undefined
+    if (!inserted) {
+        inserted = [];
+        logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany started.');
+    }
+
+    // Return if the recursion is finished.
+    if (accounts.length === inserted.length) {
+        // SQL INSERTs returns undefined, change this?
+        return new Promise(function (resolve, reject) {
+            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+            resolve(inserted.length);
+        });
+    }
+
+    var lastInserted = accounts[inserted.length];
+
+    return new Promise(function (resolve, reject) {
+        exports.insertOne(lastInserted, isTemp)
+            .then(resolve)
+            .catch(reject);
+    })
+        .then(function (result) {
+            return insertMany(accounts, isTemp, inserted.concat([lastInserted]));
+        })
+        .catch(function (err) {
+            return new Promise(function (resolve, reject) {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
+                reject(err);
+            });
+        });
 };

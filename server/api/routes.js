@@ -16,4 +16,8 @@
 module.exports = function (app) {
   app.use('/customer', require('./customer'));
   app.use('/account', require('./account'));
+  app.use('/supplier', require('./supplier'));
+  app.use('/costcenter', require('./costcenter'));
+  app.use('/voucherseries', require('./voucherseries'));
+  app.use('/invoice', require('./invoice'));
 };
