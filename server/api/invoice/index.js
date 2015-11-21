@@ -9,7 +9,7 @@
 var express = require('express');
 var router = express.Router();
 
-var flow  = require('./invoice.flow');
+var flow  = require('./invoice.flow.js');
 
 /**
  * Triggers the cleanAndFetch flow method.

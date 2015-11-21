@@ -9,8 +9,8 @@
 var _ = require('lodash');
 var Promise = require('bluebird');
 
-var dbHandler = require('./invoice.dbHandler');
-var requestHandler = require('./invoice.requestHandler');
+var dbHandler = require('./invoice.dbHandler.js');
+var requestHandler = require('./invoice.requestHandler.js');
 
 /**
  * Fetches and inserts or updates all Invoices

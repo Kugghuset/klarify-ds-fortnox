@@ -10,9 +10,9 @@ var Promise = require('bluebird');
 var request = require('request');
 
 var config = require('../../config/environment/development');
-var appState = require('../../app.state');
-var util = require('../../utils/fortnox.util');
-var logger = require('../../utils/logger.util');
+var appState = require('../../app.state.js');
+var util = require('../../utils/fortnox.util.js');
+var logger = require('../../utils/logger.util.js');
 
 var fortnoxInvoiceUrl = 'https://api.fortnox.se/3/invoices/';
 
