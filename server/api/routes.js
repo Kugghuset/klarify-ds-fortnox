@@ -20,4 +20,5 @@ module.exports = function (app) {
   app.use('/costcenter', require('./costcenter'));
   app.use('/voucherseries', require('./voucherseries'));
   app.use('/invoice', require('./invoice'));
+  app.use('/voucher', require('./voucher'));
 };
