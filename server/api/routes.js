@@ -23,4 +23,5 @@ module.exports = function (app) {
   app.use('/voucher', require('./voucher'));
   app.use('/voucher', require('./voucher'));
   app.use('/supplierinvoice', require('./supplierinvoice'));
+  app.use('/supplierinvoicepayment', require('./supplierinvoicepayment'));
 };
