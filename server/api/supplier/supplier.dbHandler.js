@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util');
@@ -195,7 +196,56 @@ exports.insertOne = function (supplier, isTemp) {
  */
 exports.insertMany = function insertMany(suppliers, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
+
+    var tableName = isTemp
+        ? 'TempSupplier'
+        : 'Supplier';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('City', mssql.NVarChar(1024), {nullable: true});
+    table.columns.add('Email', mssql.NVarChar(1024), {nullable: true});
+    table.columns.add('Name', mssql.NVarChar(1024), {nullable: true});
+    table.columns.add('OrganisationNumber', mssql.NVarChar(1024), {nullable: true});
+    table.columns.add('Phone', mssql.NVarChar(1024), {nullable: true});
+    table.columns.add('SupplierNumber', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('ZipCode', mssql.NVarChar(1024), {nullable: true});
+
+    //table.rows.add(777, 'test');
+
+    suppliers.forEach(function(supplier){
+        table.rows.add(
+            supplier['@url'],
+            supplier['City'],
+            supplier['Email'],
+            supplier['Name'],
+            supplier['OrganisationNumber'],
+            supplier['Phone'],
+            supplier['SupplierNumber'],
+            supplier['ZipCode']
+        );
+    });
+
+    return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'supplier.insertMany rejected.');
+                reject(err);
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'supplier.insertMany resolved.');
+                resolve(rowCount);
+
+            }
+        });
+    });
+
+
+   /* if (!inserted) {
         inserted = [];
         logger.stream.write((isTemp ? '(temp) ' : '') + 'supplier.insertMany started.');
     }
@@ -223,7 +273,7 @@ exports.insertMany = function insertMany(suppliers, isTemp, inserted) {
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'supplier.insertMany rejected.');
                 reject(err);
             });
-        });
+        });*/
 };
 
 /**

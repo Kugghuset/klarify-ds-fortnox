@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util');
@@ -183,7 +184,49 @@ exports.insertOne = function (costcenter, isTemp) {
 };
 exports.insertMany = function insertMany(costcenters, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
+
+    var tableName = isTemp
+        ? 'TempCostcenter'
+        : 'Costcenter';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Code', mssql.NVarChar(mssql.MAX), {nullable: false});
+    table.columns.add('Description', mssql.NVarChar(mssql.MAX), {nullable: false});
+    table.columns.add('Note', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Active', mssql.Bit, {nullable: true});
+
+    //table.rows.add(777, 'test');
+
+    costcenters.forEach(function(costcenter){
+        table.rows.add(
+            costcenter['@url'],
+            costcenter['Code'],
+            costcenter['Description'],
+            costcenter['Note'],
+            costcenter['Active']
+        );
+    });
+
+    return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
+                reject(err);
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+                resolve(rowCount);
+
+            }
+        });
+    });
+
+/*    if (!inserted) {
         inserted = [];
         logger.stream.write((isTemp ? '(temp) ' : '') + 'costcenter.insertMany started.');
     }
@@ -210,7 +253,7 @@ exports.insertMany = function insertMany(costcenters, isTemp, inserted) {
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'costcenter.insertMany rejected.');
                 reject(err);
             });
-        });
+        });*/
 };
 
 /**

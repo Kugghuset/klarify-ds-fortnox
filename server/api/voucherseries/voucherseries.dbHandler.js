@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util');
@@ -188,7 +189,49 @@ exports.insertOne = function (voucherseries, isTemp) {
 };
 exports.insertMany = function insertMany(voucherseries, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
+    var tableName = isTemp
+        ? 'TempVoucherseries'
+        : 'Voucherseries';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Code', mssql.NVarChar(mssql.MAX), {nullable: false});
+    table.columns.add('Description', mssql.NVarChar(mssql.MAX), {nullable: false});
+    table.columns.add('Manual', mssql.Bit, {nullable: true});
+    table.columns.add('NextVoucherNumber', mssql.Int, {nullable: true});
+    table.columns.add('Year', mssql.Int, {nullable: true});
+
+    //table.rows.add(777, 'test');
+
+    voucherseries.forEach(function(vs){
+        table.rows.add(
+            vs['@url'],
+            vs['Code'],
+            vs['Description'],
+            vs['Manual'],
+            vs['NextVoucherNumber'],
+            vs['Year']
+        );
+    });
+
+    return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
+                reject(err);
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+                resolve(rowCount);
+
+            }
+        });
+    });
+ /*   if (!inserted) {
         inserted = [];
         logger.stream.write((isTemp ? '(temp) ' : '') + 'voucherseries.insertMany started.');
     }
@@ -215,7 +258,7 @@ exports.insertMany = function insertMany(voucherseries, isTemp, inserted) {
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'voucherseries.insertMany rejected.');
                 reject(err);
             });
-        });
+        });*/
 };
 
 /**

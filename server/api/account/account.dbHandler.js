@@ -172,8 +172,10 @@ exports.insertOne = function (account, isTemp) {
 exports.insertMany = function insertMany(accounts, isTemp, inserted) {
 
 
-
-    var table = new mssql.Table('Account'); // or temporary table, e.g. #temptable
+    var tableName = isTemp
+        ? 'TempAccount'
+        : 'Account';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
     //table.create = true;
     table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
     table.columns.add('Active', mssql.Bit, {nullable: true});
