@@ -15,6 +15,7 @@ IF (@topNum) > 0
       , [Number]
       , [SRU]
       , [Year]
+      , [IsCurrent]
   FROM [dbo].[Account];
 
   ELSE
@@ -26,4 +27,5 @@ IF (@topNum) > 0
              , [Number]
              , [SRU]
              , [Year]
+             , [IsCurrent]
   FROM [dbo].[Account];

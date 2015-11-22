@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util');
@@ -43,7 +44,7 @@ exports.initializeTable = function (isTemp) {
  * Gets the top *limit* or all Accounts rows.
  *
  * @param {Number} limit - optional,  1 <= limit <= 9223372036854775295.
- * @return {Promise} -> {[Customer]}
+ * @return {Promise} -> {[Account]}
  */
 exports.getAll = function (limit) {
     return new Promise(function (resolve, reject) {
@@ -61,6 +62,8 @@ exports.getAll = function (limit) {
                 resolve(results);
             })
             .catch(function (err) {
+                console.log("err")
+                console.log(err)
                 logger.stream.write('account.getAll rejected.');
                 reject(err);
             });
@@ -99,7 +102,7 @@ exports.drop = function (isTemp) {
 
 /**
  * Inserts a new row in the Accounts table.
- * If no *customer* is non-existent or not
+ * If no *account* is non-existent or not
  *
  * @param {Object} account
  * @param {Bool} isTemp - optional
@@ -168,60 +171,141 @@ exports.insertOne = function (account, isTemp) {
  */
 exports.insertMany = function insertMany(accounts, isTemp, inserted) {
 
-  /*  var accountArray=[];
+
+
+    var table = new mssql.Table('Account'); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Active', mssql.Bit, {nullable: true});
+    table.columns.add('Description', mssql.NVarChar(200), {nullable: false});
+    table.columns.add('Number', mssql.Int, {nullable: false});
+    table.columns.add('SRU', mssql.Int, {nullable: true});
+    table.columns.add('Year', mssql.Int, {nullable: true});
+
+    //table.rows.add(777, 'test');
+
     accounts.forEach(function(account){
-        accountArray.push([account['@url'],account['Active'],account['Description'],account['Number'],account['SRU'],account['Year']])
+        table.rows.add(
+            account['@url'],
+            account['Active'],
+            account['Description'],
+            account['Number'],
+            account['SRU'],
+            account['Year']
+        );
     });
-    console.log("accounts")
-    console.log(accountArray.length)
-    console.log(accountArray[100])
-    var sqlFile ='./sql/account.bulkInsert.sql';
-
-    sql.execute({
-        query: sql.fromFile(sqlFile),
-        params:{accountArray:accountArray}
-
-
-    }).then(function (result) {
-            console.log("SUCCESS")
-            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.bulkInsert resolved.');
-            resolve(result);
-        })
-        .catch(function (err) {
-            console.log("Error")
-            console.log(err)
-            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.bulkInsert  rejected.');
-            reject(err);
-        });*/
-    // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
-        inserted = [];
-        logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany started.');
-    }
-
-    // Return if the recursion is finished.
-    if (accounts.length === inserted.length) {
-        // SQL INSERTs returns undefined, change this?
-        return new Promise(function (resolve, reject) {
-            logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
-            resolve(inserted.length);
-        });
-    }
-
-    var lastInserted = accounts[inserted.length];
 
     return new Promise(function (resolve, reject) {
-        exports.insertOne(lastInserted, isTemp)
-            .then(resolve)
-            .catch(reject);
-    })
-        .then(function (result) {
-            return insertMany(accounts, isTemp, inserted.concat([lastInserted]));
-        })
-        .catch(function (err) {
-            return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
                 reject(err);
-            });
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+                resolve(rowCount);
+
+            }
         });
+    });
+
+    /*      if (!inserted) {
+     inserted = [];
+     logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany started.');
+     }
+
+     // Return if the recursion is finished.
+     if (accounts.length === inserted.length) {
+     // SQL INSERTs returns undefined, change this?
+     return new Promise(function (resolve, reject) {
+     logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+     resolve(inserted.length);
+     });
+     }
+
+     var lastInserted = accounts[inserted.length];
+
+     return new Promise(function (resolve, reject) {
+     exports.insertOne(lastInserted, isTemp)
+     .then(resolve)
+     .catch(reject);
+     })
+     .then(function (result) {
+     return insertMany(accounts, isTemp, inserted.concat([lastInserted]));
+     })
+     .catch(function (err) {
+     return new Promise(function (resolve, reject) {
+     logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
+     reject(err);
+     });
+     });*/
 };
+
+/**
+ * Gets all active Accounts from the db.
+ *
+ * @return {Promise} -> {[Account]}
+ */
+exports.getActive = function () {
+    return new Promise(function (resolve, reject) {
+        sql.execute({
+            query: sql.fromFile('./sql/account.getActive.sql')
+        })
+            .then(function (results) {
+                logger.stream.write('account.getActive resolved.');
+                resolve(results);
+            })
+            .catch(function (err) {
+                console.log("err")
+                console.log(err)
+                logger.stream.write('account.getActive rejected.');
+                reject(err);
+            });
+    });
+};
+
+/**
+ * Updates existing but changed custumers and inserts new account
+ * into the account table.
+ *
+ * @param {Array} ([Account])
+ * @return {Promise} -> undefined
+ */
+exports.updateOrInsert = function updateOrInsert(accounts) {
+    return new Promise(function (resolve, reject) {
+        new Promise(function (resolve, reject) {
+            exports.initializeTable(true)
+                .then(function () {
+                    exports.insertMany(accounts, true)
+                        .then(resolve);
+                })
+                .catch(reject);
+        })
+            .then(function () {
+                return new Promise(function (resolve, reject) {
+                    sql.execute({
+                        query: sql.fromFile('./sql/account.merge.sql')
+                    })
+                        .then(function (result) {
+                            resolve(result);
+                        })
+                        .catch(function (err) {
+
+                            logger.stream.write('account.updateOrInsert rejected');
+                            reject(err);
+                        });
+                });
+            })
+            .then(function () {
+                logger.stream.write('account.updateOrInsert resolved');
+
+                exports.drop(true)
+                    .then(resolve);
+            });
+
+    });
+}

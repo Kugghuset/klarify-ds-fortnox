@@ -36,6 +36,30 @@ router.get('/', function (req, res) {
 });
 
 /**
+ * Gets all active accounts from the db.
+ * A response with the statuscode 200 containing the customers are returned.
+ */
+router.get('/getAllActive', function (req, res) {
+    flow.getAllActive()
+        .then(function (_res) {
+            res.status(200).json(_res);
+        })
+        .catch(handleError);
+});
+
+
+/**
+ * Triggers the fetchNewlyModified flow method.
+ * If successful, a response with the statuscode 200.
+ */
+router.get('/fetchNewlyModified', function (req, res) {
+    flow.fetchNewlyModified()
+        .then(function (_res) {
+            res.status(200).send('Newly modifified customers fetched.');
+        })
+        .catch(handleError);
+});
+/**
  * Sends a response with the status code 500
  *
  * @param {Object} res - express response object

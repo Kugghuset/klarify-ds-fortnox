@@ -39,3 +39,25 @@ exports.getAll = function () {
     return dbHandler.initializeTable()
         .then(dbHandler.getAll);
 }
+
+
+/**
+ * Gets all active customers from the database.
+ *
+ * @return {Promise} -> ([Customer])
+ */
+exports.getAllActive = function () {
+    return dbHandler.initializeTable()
+        .then(dbHandler.getActive);
+};
+/**
+ * Fetches and inserts or updates all Customers
+ * from the Fortnox API which are new or updated since last time.
+ *
+ * @return {Promise} -> undefined
+ */
+exports.fetchNewlyModified = function () {
+    return dbHandler.initializeTable()
+        .then(requestHandler.getNewlyModified)
+        .then(dbHandler.updateOrInsert);
+};
