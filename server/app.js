@@ -40,5 +40,5 @@ function serve() {
  * Add new names as they are created to the array
  */
 sql.setDefaultConfig(dbConfig);
-appState.initializeTables(['Customer','Account','Supplier','Costcenter','Voucherseries','Invoice','Voucher','InvoicePayment'])
+appState.initializeTables(['Customer','Account','Supplier','Costcenter','Voucherseries','Invoice','Voucher','InvoicePayment','SupplierInvoice'])
 .then(serve);
