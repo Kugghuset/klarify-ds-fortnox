@@ -215,11 +215,11 @@ exports.insertMany = function insertMany(costcenters, isTemp, inserted) {
             if (err) {
                 console.log("err")
                 console.log(err)
-                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'costcenter.insertMany rejected.');
                 reject(err);
             }
             else {
-                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'costcenter.insertMany resolved.');
                 resolve(rowCount);
 
             }

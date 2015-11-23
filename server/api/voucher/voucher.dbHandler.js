@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util');
@@ -186,36 +187,79 @@ exports.insertOne = function (vouchers, isTemp) {
             });
     });
 };
-exports.insertMany = function insertMany(voucherss, isTemp, inserted) {
+exports.insertMany = function insertMany(vouchers, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
-        inserted = [];
-        logger.stream.write((isTemp ? '(temp) ' : '') + 'vouchers.insertMany started.');
-    }
+    var tableName = isTemp
+        ? 'TempVoucher'
+        : 'Voucher';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('ReferenceNumber', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('ReferenceType', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('VoucherNumber', mssql.Int, {nullable: true});
+    table.columns.add('VoucherSeries', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('Year', mssql.Int , {nullable: true});
 
-    // Return if the recursion is finished.
-    if (voucherss.length === inserted.length) {
-        // SQL INSERTs returns undefined, change this?
-        return new Promise(function (resolve, reject) {
-            logger.stream.write((isTemp ? '(temp) ' : '') + 'vouchers.insertMany resolved.');
-            resolve(inserted.length);
-        });
-    }
+    //table.rows.add(777, 'test');
 
-    var lastInserted = voucherss[inserted.length];
+    vouchers.forEach(function(voucher){
+        table.rows.add(
+            voucher['@url'],
+            voucher['ReferenceNumber'],
+            voucher['ReferenceType'],
+            voucher['VoucherNumber'],
+            voucher['VoucherSeries'],
+            voucher['Year']
+        );
+    });
+
     return new Promise(function (resolve, reject) {
-        exports.insertOne(lastInserted, isTemp)
-            .then(resolve)
-            .catch(reject);
-    }).then(function (result) {
-            return insertMany(voucherss, isTemp, inserted.concat([lastInserted]));
-        })
-        .catch(function (err) {
-            return new Promise(function (resolve, reject) {
-                logger.stream.write((isTemp ? '(temp) ' : '') + 'vouchers.insertMany rejected.');
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'voucher.insertMany rejected.');
                 reject(err);
-            });
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'voucher.insertMany resolved.');
+                resolve(rowCount);
+
+            }
         });
+    });
+
+    /* if (!inserted) {
+         inserted = [];
+         logger.stream.write((isTemp ? '(temp) ' : '') + 'vouchers.insertMany started.');
+     }
+
+     // Return if the recursion is finished.
+     if (voucherss.length === inserted.length) {
+         // SQL INSERTs returns undefined, change this?
+         return new Promise(function (resolve, reject) {
+             logger.stream.write((isTemp ? '(temp) ' : '') + 'vouchers.insertMany resolved.');
+             resolve(inserted.length);
+         });
+     }
+
+     var lastInserted = voucherss[inserted.length];
+     return new Promise(function (resolve, reject) {
+         exports.insertOne(lastInserted, isTemp)
+             .then(resolve)
+             .catch(reject);
+     }).then(function (result) {
+             return insertMany(voucherss, isTemp, inserted.concat([lastInserted]));
+         })
+         .catch(function (err) {
+             return new Promise(function (resolve, reject) {
+                 logger.stream.write((isTemp ? '(temp) ' : '') + 'vouchers.insertMany rejected.');
+                 reject(err);
+             });
+         });*/
 };
 
 /**

@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util.js');
@@ -247,7 +248,80 @@ exports.insertOne = function (invoice, isTemp) {
  */
 exports.insertMany = function insertMany(invoices, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
+    var tableName = isTemp
+        ? 'TempInvoice'
+        : 'Invoice';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Balance', mssql.Float, {nullable: true});
+    table.columns.add('Booked', mssql.Bit, {nullable: true});
+    table.columns.add('Cancelled', mssql.Bit, {nullable: true});
+    table.columns.add('Currency', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('CurrencyRate', mssql.Float, {nullable: true});
+    table.columns.add('CurrencyUnit', mssql.Float, {nullable: true});
+    table.columns.add('CustomerName', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('CustomerNumber', mssql.NVarChar(mssql.MAX), {nullable: false});
+    table.columns.add('DocumentNumber', mssql.Int, {nullable: true});
+    table.columns.add('DueDate', mssql.DateTime2 , {nullable: true});
+    table.columns.add('ExternalInvoiceReference1', mssql.NVarChar(80) , {nullable: true});
+    table.columns.add('ExternalInvoiceReference2', mssql.NVarChar(80) , {nullable: true});
+    table.columns.add('InvoiceDate', mssql.DateTime2 , {nullable: true});
+    table.columns.add('NoxFinans', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('OCR', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('WayOfDelivery', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('TermsOfPayment', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('Project', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('Sent', mssql.Bit , {nullable: true});
+    table.columns.add('Total', mssql.Float, {nullable: true});
+
+    //table.rows.add(777, 'test');
+
+    invoices.forEach(function(invoice){
+        table.rows.add(
+            invoice['@url'],
+            invoice['Balance'],
+            invoice['Booked'],
+            invoice['Cancelled'],
+            invoice['Currency'],
+            invoice['CurrencyRate'],
+            invoice['CurrencyUnit'],
+            invoice['CustomerName'],
+            invoice['CustomerNumber'],
+            invoice['DocumentNumber'],
+            invoice['DueDate'],
+            invoice['ExternalInvoiceReference1'],
+            invoice['ExternalInvoiceReference2'],
+            invoice['InvoiceDate'],
+            invoice['NoxFinans'],
+            invoice['OCR'],
+            invoice['WayOfDelivery'],
+            invoice['TermsOfPayment'],
+            invoice['Project'],
+            invoice['Sent'],
+            invoice['Total']
+        );
+    });
+
+    return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'invoice.insertMany rejected.');
+                reject(err);
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'invoice.insertMany resolved.');
+                resolve(rowCount);
+
+            }
+        });
+    });
+
+   /* if (!inserted) {
         inserted = [];
         logger.stream.write((isTemp ? '(temp) ' : '') + 'invoice.insertMany started.');
     }
@@ -275,7 +349,7 @@ exports.insertMany = function insertMany(invoices, isTemp, inserted) {
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'invoice.insertMany rejected.');
                 reject(err);
             });
-        });
+        });*/
 };
 
 /**

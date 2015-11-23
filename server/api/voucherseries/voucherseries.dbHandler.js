@@ -221,11 +221,11 @@ exports.insertMany = function insertMany(voucherseries, isTemp, inserted) {
             if (err) {
                 console.log("err")
                 console.log(err)
-                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany rejected.');
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'voucherseries.insertMany rejected.');
                 reject(err);
             }
             else {
-                logger.stream.write((isTemp ? '(temp) ' : '') + 'account.insertMany resolved.');
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'voucherseries.insertMany resolved.');
                 resolve(rowCount);
 
             }
