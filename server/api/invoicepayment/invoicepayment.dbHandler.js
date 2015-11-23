@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util.js');
@@ -203,35 +204,88 @@ exports.insertOne = function (invoicepayment, isTemp) {
  */
 exports.insertMany = function insertMany(invoicepayments, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
-        inserted = [];
-        logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany started.');
-    }
+    var tableName = isTemp
+        ? 'TempInvoicePayment'
+        : 'InvoicePayment';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Amount', mssql.Float, {nullable: false});
+    table.columns.add('Booked', mssql.Bit, {nullable: true});
+    table.columns.add('Currency', mssql.NVarChar(3), {nullable: true});
+    table.columns.add('CurrencyRate', mssql.Float, {nullable: true});
+    table.columns.add('CurrencyUnit', mssql.Float, {nullable: true});
+    table.columns.add('InvoiceNumber', mssql.Int, {nullable: false});
+    table.columns.add('Number', mssql.Int, {nullable: true});
+    table.columns.add('PaymentDate', mssql.DateTime2, {nullable: true});
+    table.columns.add('Source', mssql.NVarChar(mssql.MAX), {nullable: true});
 
-    // Return if the recursion is finished.
-    if (invoicepayments.length === inserted.length) {
-        // SQL INSERTs returns undefined, change this?
-        return new Promise(function (resolve, reject) {
-            logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany resolved.');
-            resolve(inserted.length);
-        });
-    }
 
-    var lastInserted = invoicepayments[inserted.length];
+    //table.rows.add(777, 'test');
+
+    invoicepayments.forEach(function(invoicepayment){
+        table.rows.add(
+            invoicepayment['@url'],
+            invoicepayment['Amount'],
+            invoicepayment['Booked'],
+            invoicepayment['Currency'],
+            invoicepayment['CurrencyRate'],
+            invoicepayment['CurrencyUnit'],
+            invoicepayment['InvoiceNumber'],
+            invoicepayment['Number'],
+            invoicepayment['PaymentDate'],
+            invoicepayment['Source']
+        );
+    });
 
     return new Promise(function (resolve, reject) {
-        exports.insertOne(lastInserted, isTemp)
-            .then(resolve)
-            .catch(reject);
-    }).then(function (result) {
-            return insertMany(invoicepayments, isTemp, inserted.concat([lastInserted]));
-        })
-        .catch(function (err) {
-            return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany rejected.');
                 reject(err);
-            });
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany resolved.');
+                resolve(rowCount);
+
+            }
         });
+    });
+
+
+    /*  if (!inserted) {
+          inserted = [];
+          logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany started.');
+      }
+
+      // Return if the recursion is finished.
+      if (invoicepayments.length === inserted.length) {
+          // SQL INSERTs returns undefined, change this?
+          return new Promise(function (resolve, reject) {
+              logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany resolved.');
+              resolve(inserted.length);
+          });
+      }
+
+      var lastInserted = invoicepayments[inserted.length];
+
+      return new Promise(function (resolve, reject) {
+          exports.insertOne(lastInserted, isTemp)
+              .then(resolve)
+              .catch(reject);
+      }).then(function (result) {
+              return insertMany(invoicepayments, isTemp, inserted.concat([lastInserted]));
+          })
+          .catch(function (err) {
+              return new Promise(function (resolve, reject) {
+                  logger.stream.write((isTemp ? '(temp) ' : '') + 'invoicepayment.insertMany rejected.');
+                  reject(err);
+              });
+          });*/
 };
 
 /**

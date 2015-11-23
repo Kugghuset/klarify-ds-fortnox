@@ -10,7 +10,7 @@ BEGIN
     [Amount] float NOT NULL,
     [Booked] bit NULL,
     [Currency] nvarchar(3) NULL,
-    [CurrencyRate] float NULL,
+    [CurrencyRate] decimal NULL,
     [CurrencyUnit] float NULL,
     [InvoiceNumber] int NOT NULL,
     [Number] int NULL,

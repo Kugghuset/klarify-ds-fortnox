@@ -7,6 +7,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var Promise = require('bluebird');
 
 var logger = require('../../utils/logger.util.js');
@@ -210,35 +211,89 @@ exports.insertOne = function (supplierinvoice, isTemp) {
  */
 exports.insertMany = function insertMany(supplierinvoices, isTemp, inserted) {
     // Set *inserted* to an empty array if it's undefined
-    if (!inserted) {
-        inserted = [];
-        logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany started.');
-    }
 
-    // Return if the recursion is finished.
-    if (supplierinvoices.length === inserted.length) {
-        // SQL INSERTs returns undefined, change this?
-        return new Promise(function (resolve, reject) {
-            logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany resolved.');
-            resolve(inserted.length);
-        });
-    }
+    var tableName = isTemp
+        ? 'TempSupplierInvoice'
+        : 'SupplierInvoice';
+    var table = new mssql.Table(tableName); // or temporary table, e.g. #temptable
+    //table.create = true;
+    table.columns.add('@url', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Balance', mssql.NVarChar(mssql.MAX), {nullable: true});
+    table.columns.add('Booked', mssql.Bit, {nullable: true});
+    table.columns.add('Cancel', mssql.Bit, {nullable: true});
+    table.columns.add('DueDate', mssql.DateTime2 , {nullable: true});
+    table.columns.add('GivenNumber', mssql.Int , {nullable: true});
+    table.columns.add('InvoiceDate', mssql.DateTime2 , {nullable: true});
+    table.columns.add('InvoiceNumber', mssql.BigInt , {nullable: true});
+    table.columns.add('SupplierNumber', mssql.NVarChar(mssql.MAX) , {nullable: false});
+    table.columns.add('SupplierName', mssql.NVarChar(mssql.MAX) , {nullable: true});
+    table.columns.add('Total', mssql.Int, {nullable: true});
 
-    var lastInserted = supplierinvoices[inserted.length];
+    //table.rows.add(777, 'test');
+
+    supplierinvoices.forEach(function(supplierinvoice){
+        table.rows.add(
+            supplierinvoice['@url'],
+            supplierinvoice['Balance'],
+            supplierinvoice['Booked'],
+            supplierinvoice['Cancel'],
+            supplierinvoice['DueDate'],
+            supplierinvoice['GivenNumber'],
+            supplierinvoice['InvoiceDate'],
+            supplierinvoice['InvoiceNumber'],
+            supplierinvoice['SupplierNumber'],
+            supplierinvoice['SupplierName'],
+            supplierinvoice['Total']
+        );
+    });
 
     return new Promise(function (resolve, reject) {
-        exports.insertOne(lastInserted, isTemp)
-            .then(resolve)
-            .catch(reject);
-    }).then(function (result) {
-            return insertMany(supplierinvoices, isTemp, inserted.concat([lastInserted]));
-        })
-        .catch(function (err) {
-            return new Promise(function (resolve, reject) {
+        var request = new mssql.Request();
+        request.bulk(table, function (err, rowCount) {
+            // ... error checks
+            if (err) {
+                console.log("err")
+                console.log(err)
                 logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany rejected.');
                 reject(err);
-            });
+            }
+            else {
+                logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany resolved.');
+                resolve(rowCount);
+
+            }
         });
+    });
+
+    /*  if (!inserted) {
+          inserted = [];
+          logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany started.');
+      }
+
+      // Return if the recursion is finished.
+      if (supplierinvoices.length === inserted.length) {
+          // SQL INSERTs returns undefined, change this?
+          return new Promise(function (resolve, reject) {
+              logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany resolved.');
+              resolve(inserted.length);
+          });
+      }
+
+      var lastInserted = supplierinvoices[inserted.length];
+
+      return new Promise(function (resolve, reject) {
+          exports.insertOne(lastInserted, isTemp)
+              .then(resolve)
+              .catch(reject);
+      }).then(function (result) {
+              return insertMany(supplierinvoices, isTemp, inserted.concat([lastInserted]));
+          })
+          .catch(function (err) {
+              return new Promise(function (resolve, reject) {
+                  logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany rejected.');
+                  reject(err);
+              });
+          });*/
 };
 
 /**
