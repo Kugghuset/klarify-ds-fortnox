@@ -211,8 +211,7 @@ exports.insertMany = function insertMany(suppliers, isTemp, inserted) {
     table.columns.add('SupplierNumber', mssql.NVarChar(mssql.MAX), {nullable: true});
     table.columns.add('ZipCode', mssql.NVarChar(1024), {nullable: true});
 
-    //table.rows.add(777, 'test');
-
+   
     suppliers.forEach(function(supplier){
         table.rows.add(
             supplier['@url'],
