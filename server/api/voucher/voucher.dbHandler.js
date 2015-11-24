@@ -263,7 +263,7 @@ exports.insertMany = function insertMany(vouchers, isTemp, inserted) {
 };
 
 /**
- * Updates existing but changed custumers and inserts new vouchers
+ * Updates existing but changed vouchers and inserts new vouchers
  * into the vouchers table.
  *
  * @param {Array} ([vouchers])

@@ -329,18 +329,18 @@ exports.disable = function (supplierID) {
         sql.execute({
             query: sql.fromFile('./sql/customer.disabledByID.sql'),
             params: {
-                customerID: {
+                supplierID: {
                     type: sql.BIGINT,
-                    val: customerID
+                    val: supplierID
                 }
             }
         })
             .then(function (result) {
-                logger.stream.write('customer.disable ' + customerID + ' resolved');
+                logger.stream.write('customer.disable ' + supplierID + ' resolved');
                 resolve(result);
             })
             .catch(function (err) {
-                logger.stream.write('customer.disable ' + customerID + ' rejected');
+                logger.stream.write('customer.disable ' + supplierID + ' rejected');
                 reject(err);
             });
     });

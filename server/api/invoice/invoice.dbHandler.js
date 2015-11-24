@@ -404,20 +404,20 @@ exports.updateOrInsert = function updateOrInsert(invoices) {
 exports.disable = function (invoiceID) {
     return new Promise(function (resolve, reject) {
         sql.execute({
-            query: sql.fromFile('./sql/customer.disabledByID.sql'),
+            query: sql.fromFile('./sql/account.disabledByID.sql'),
             params: {
-                customerID: {
+                accountID: {
                     type: sql.BIGINT,
-                    val: customerID
+                    val: accountID
                 }
             }
         })
             .then(function (result) {
-                logger.stream.write('customer.disable ' + customerID + ' resolved');
+                logger.stream.write('account.disable ' + accountID + ' resolved');
                 resolve(result);
             })
             .catch(function (err) {
-                logger.stream.write('customer.disable ' + customerID + ' rejected');
+                logger.stream.write('account.disable ' + accountID + ' rejected');
                 reject(err);
             });
     });

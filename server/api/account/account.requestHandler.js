@@ -75,7 +75,7 @@ exports.getAll = function getAll(accounts, currentPage, lastPage) {
     }
 
     if (currentPage >= lastPage) {
-        // Finished getting all Customers
+        // Finished getting all Accounts
         return new Promise(function (resolve, reject) {
 
             // Actual return of the function

@@ -25,7 +25,7 @@ router.get('/cleanAndFetch', function (req, res) {
 
 /**
  * Gets all account from the db, includes historical data.
- * A response with the statuscode 200 containing the customers are returned.
+ * A response with the statuscode 200 containing the accounts are returned.
  */
 router.get('/', function (req, res) {
     flow.getAll()
@@ -37,7 +37,7 @@ router.get('/', function (req, res) {
 
 /**
  * Gets all active accounts from the db.
- * A response with the statuscode 200 containing the customers are returned.
+ * A response with the statuscode 200 containing the accounts are returned.
  */
 router.get('/getAllActive', function (req, res) {
     flow.getAllActive()
@@ -55,7 +55,7 @@ router.get('/getAllActive', function (req, res) {
 router.get('/fetchNewlyModified', function (req, res) {
     flow.fetchNewlyModified()
         .then(function (_res) {
-            res.status(200).send('Newly modifified customers fetched.');
+            res.status(200).send('Newly modifified accounts fetched.');
         })
         .catch(handleError);
 });
