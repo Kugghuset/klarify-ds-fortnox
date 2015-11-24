@@ -233,7 +233,7 @@ exports.insertMany = function insertMany(invoicepayments, isTemp, inserted) {
             invoicepayment['CurrencyUnit'],
             invoicepayment['InvoiceNumber'],
             invoicepayment['Number'],
-            invoicepayment['PaymentDate'],
+            new Date(invoicepayment['PaymentDate']),
             invoicepayment['Source']
         );
     });

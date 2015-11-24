@@ -229,8 +229,6 @@ exports.insertMany = function insertMany(supplierinvoices, isTemp, inserted) {
     table.columns.add('SupplierName', mssql.NVarChar(mssql.MAX) , {nullable: true});
     table.columns.add('Total', mssql.Int, {nullable: true});
 
-    //table.rows.add(777, 'test');
-
     supplierinvoices.forEach(function(supplierinvoice){
         table.rows.add(
             supplierinvoice['@url'],
@@ -239,7 +237,7 @@ exports.insertMany = function insertMany(supplierinvoices, isTemp, inserted) {
             supplierinvoice['Cancel'],
             supplierinvoice['DueDate'],
             supplierinvoice['GivenNumber'],
-            supplierinvoice['InvoiceDate'],
+            new Date(supplierinvoice['InvoiceDate']),
             supplierinvoice['InvoiceNumber'],
             supplierinvoice['SupplierNumber'],
             supplierinvoice['SupplierName'],

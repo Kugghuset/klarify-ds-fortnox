@@ -275,8 +275,6 @@ exports.insertMany = function insertMany(invoices, isTemp, inserted) {
     table.columns.add('Sent', mssql.Bit , {nullable: true});
     table.columns.add('Total', mssql.Float, {nullable: true});
 
-    //table.rows.add(777, 'test');
-
     invoices.forEach(function(invoice){
         table.rows.add(
             invoice['@url'],
@@ -289,10 +287,10 @@ exports.insertMany = function insertMany(invoices, isTemp, inserted) {
             invoice['CustomerName'],
             invoice['CustomerNumber'],
             invoice['DocumentNumber'],
-            invoice['DueDate'],
+            new Date(invoice['DueDate']),
             invoice['ExternalInvoiceReference1'],
             invoice['ExternalInvoiceReference2'],
-            invoice['InvoiceDate'],
+            new Date(invoice['InvoiceDate']),
             invoice['NoxFinans'],
             invoice['OCR'],
             invoice['WayOfDelivery'],
