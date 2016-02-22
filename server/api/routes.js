@@ -15,4 +15,13 @@
  */
 module.exports = function (app) {
   app.use('/customer', require('./customer'));
+  app.use('/account', require('./account'));
+  app.use('/supplier', require('./supplier'));
+  app.use('/costcenter', require('./costcenter'));
+  app.use('/voucherseries', require('./voucherseries'));
+  app.use('/invoice', require('./invoice'));
+  app.use('/voucher', require('./voucher'));
+  app.use('/invoicepayment', require('./invoicepayment'));
+  app.use('/supplierinvoice', require('./supplierinvoice'));
+  app.use('/supplierinvoicepayment', require('./supplierinvoicepayment'));
 };

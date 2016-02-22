@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var sql = require('seriate');
+var mssql = require('mssql');
 var morgan = require('morgan');
 var express = require('express');
 var app = express();
@@ -19,7 +20,7 @@ var dbConfig = {
   "password": config.db.password,
   "database": config.db.database,
   "options": {
-    "encrypt": false
+    "encrypt": true
   }
 };
 
@@ -27,7 +28,7 @@ var dbConfig = {
  * Starts the express server listening on config.server.port
  */
 function serve() {
-  var server = app.listen(config.server.port, config.server.ip, function () {
+  var server = app.listen(3000, function () {
     var port = server.address().port;
     
     logger.stream.write('App listening on port ' + port);
@@ -40,5 +41,9 @@ function serve() {
  * Add new names as they are created to the array
  */
 sql.setDefaultConfig(dbConfig);
-appState.initializeTables(['Customer'])
+var config = dbConfig;
+mssql.connect(config, function(err) {
+  // ... error checks
+});
+appState.initializeTables(['Customer','Account','Supplier','Costcenter','Voucherseries','Invoice','Voucher','InvoicePayment','SupplierInvoice','SupplierInvoicePayment'])
 .then(serve);

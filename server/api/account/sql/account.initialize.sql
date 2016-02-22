@@ -1,0 +1,20 @@
+/*
+On start, create the Account table if it's not present.
+*/
+
+IF (OBJECT_ID('Account', 'U') IS NULL)
+BEGIN
+  CREATE TABLE [dbo].[Account] (
+    [AccountID] bigint IDENTITY(1, 1) PRIMARY KEY NOT NULL,
+    [@url] nvarchar(max) NULL,
+    [Active]  bit NULL DEFAULT 1,
+    [Description] nvarchar(200) NOT NULL,
+    [Number] int NOT NULL,
+    [SRU] int NULL,
+    [Year] int NULL,
+    [IsCurrent] bit NULL DEFAULT 1,
+    [StartDate] datetime2 NULL DEFAULT GETUTCDATE(),
+    [EndDate] datetime2 NULL,
+    [LastUpdated] datetime2 NULL DEFAULT GETUTCDATE()
+  )
+END
