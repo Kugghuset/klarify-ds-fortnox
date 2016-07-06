@@ -20,7 +20,7 @@ router.get('/cleanAndFetch', function (req, res) {
   .then(function (_res) {
     res.status(200).send('Database cleaned and all customers fetched.');
   })
-  .catch(handleError);
+  .catch(function (err) { handleError(res, err); });
 });
 
 /**
@@ -32,7 +32,7 @@ router.get('/fetchNewlyModified', function (req, res) {
   .then(function (_res) {
     res.status(200).send('Newly modifified customers fetched.');
   })
-  .catch(handleError);
+  .catch(function (err) { handleError(res, err); });
 });
 
 /**
@@ -44,7 +44,7 @@ router.get('/getAllActive', function (req, res) {
   .then(function (_res) {
     res.status(200).json(_res);
   })
-  .catch(handleError);
+  .catch(function (err) { handleError(res, err); });
 });
 
 /**
@@ -56,12 +56,12 @@ router.get('/', function (req, res) {
   .then(function (_res) {
     res.status(200).json(_res);
   })
-  .catch(handleError);
+  .catch(function (err) { handleError(res, err); });
 });
 
 /**
  * Sends a response with the status code 500
- * 
+ *
  * @param {Object} res - express response object
  * @param {Error} err
  */

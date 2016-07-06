@@ -29,14 +29,14 @@ var fortnoxCustomerUrl = 'https://api.fortnox.se/3/customers/';
  *  },
  *  Customers: [(Customers)]
  * }
- * 
+ *
  * @param {String} url
  * @return {Promise} -> {Object}
  */
 function getPage(url) {
   return new Promise(function (resolve, reject) {
     request.get({
-      uri: url, 
+      uri: url,
       headers: _.extend(
         {},
         config.headers.standard,
@@ -60,14 +60,14 @@ function getPage(url) {
 
 /**
  * Recursively gets all Customers from Fortnox.
- * 
+ *
  * @param {Array} customers - set internally, do not pass in!
  * @param {Number} currentPage - set internally, do not pass in!
  * @param {Number} lastPage - set internally, do not pass in!
  * @return {Promise} -> ([Customer])
  */
 exports.getAll = function getAll(customers, currentPage, lastPage) {
-  
+
   // Setup for recursive calls
   if (!customers) {
     customers = [];
@@ -77,7 +77,7 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
   if (currentPage >= lastPage) {
     // Finished getting all Customers
     return new Promise(function (resolve, reject) {
-      
+
       // Actual return of the function
       appState.setUpdated('Customer')
       .then(function () {
@@ -90,10 +90,13 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
       });
     });
   }
-  
+
   currentPage++;
   return getPage(util.pageUrlFor(fortnoxCustomerUrl, currentPage))
   .then(function (res) {
+
+    console.log(res);
+
     if ('ErrorInformation' in res) {
       // Reject the because of the error to ensure no infinity loop.
       return new Promise(function (resolve, reject) {
@@ -103,14 +106,14 @@ exports.getAll = function getAll(customers, currentPage, lastPage) {
     if (typeof lastPage === 'undefined' && typeof res === 'object' && res.MetaInformation) {
       lastPage = res.MetaInformation['@TotalPages'];
     }
-    
+
     return getAll(customers.concat(res.Customers), currentPage, lastPage)
   });
 };
 
 /**
  * Gets all Customers which are updated or created since the last time updated.
- * 
+ *
  * @param {Array} customers - set internally, do not pass in!
  * @param {Number} currentPage - set internally, do not pass in!
  * @param {Number} lastPage - set internally, do not pass in!
@@ -140,13 +143,13 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
       });
     });
   }
-  
+
   return new Promise(function (resolve, reject) {
     // Check if lastUpdated already is defined
     if (typeof lastUpdated !== 'undefined') {
       return resolve(lastUpdated);
     }
-    
+
     // Get lastUpdated from db
     appState.getCurrentState('Customer')
     .then(function (currentState) {
@@ -164,7 +167,7 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
   .then(function (dateUpdated) {
     lastUpdated = dateUpdated;
     currentPage++;
-      
+
     return getPage(util.pageUrlFor(fortnoxCustomerUrl, currentPage, lastUpdated))
   })
   .then(function (res) {
@@ -174,12 +177,12 @@ exports.getNewlyModified = function getNewlyModified(customers, currentPage, las
         reject(new Error(res.ErrorInformation.message));
       });
     }
-    
+
     // Set lastPage if it's undefined
     if (typeof lastPage === 'undefined' && typeof res === 'object' && res.MetaInformation) {
       lastPage = res.MetaInformation['@TotalPages'];
     }
-    
+
     console.log(lastUpdated);
     // Recursion!
     return getNewlyModified(customers.concat(res.Customers), currentPage, lastPage, lastUpdated);

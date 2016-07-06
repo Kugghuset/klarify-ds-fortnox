@@ -28,7 +28,7 @@ var dbConfig = {
  * Starts the express server listening on config.server.port
  */
 function serve() {
-  var server = app.listen(3000, function () {
+  var server = app.listen(9000, function () {
     var port = server.address().port;
     
     logger.stream.write('App listening on port ' + port);
@@ -44,6 +44,9 @@ sql.setDefaultConfig(dbConfig);
 var config = dbConfig;
 mssql.connect(config, function(err) {
   // ... error checks
+  
+  console.log(err);
+  
 });
 appState.initializeTables(['Customer','Account','Supplier','Costcenter','Voucherseries','Invoice','Voucher','InvoicePayment','SupplierInvoice','SupplierInvoicePayment'])
 .then(serve);

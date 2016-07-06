@@ -2,3 +2,4 @@
 **/typings
 userConfig.js
 *.log
+.env

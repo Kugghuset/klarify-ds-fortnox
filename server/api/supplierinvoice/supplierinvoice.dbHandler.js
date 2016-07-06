@@ -262,36 +262,6 @@ exports.insertMany = function insertMany(supplierinvoices, isTemp, inserted) {
             }
         });
     });
-
-    /*  if (!inserted) {
-          inserted = [];
-          logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany started.');
-      }
-
-      // Return if the recursion is finished.
-      if (supplierinvoices.length === inserted.length) {
-          // SQL INSERTs returns undefined, change this?
-          return new Promise(function (resolve, reject) {
-              logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany resolved.');
-              resolve(inserted.length);
-          });
-      }
-
-      var lastInserted = supplierinvoices[inserted.length];
-
-      return new Promise(function (resolve, reject) {
-          exports.insertOne(lastInserted, isTemp)
-              .then(resolve)
-              .catch(reject);
-      }).then(function (result) {
-              return insertMany(supplierinvoices, isTemp, inserted.concat([lastInserted]));
-          })
-          .catch(function (err) {
-              return new Promise(function (resolve, reject) {
-                  logger.stream.write((isTemp ? '(temp) ' : '') + 'supplierinvoice.insertMany rejected.');
-                  reject(err);
-              });
-          });*/
 };
 
 /**

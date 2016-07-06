@@ -11,6 +11,7 @@ var Promise = require('bluebird');
 
 var dbHandler = require('./supplierinvoice.dbHandler.js');
 var requestHandler = require('./supplierinvoice.requestHandler.js');
+var details = require('./supplierinvoice.detail');
 
 /**
  * Fetches and inserts or updates all Supplierinvoices
@@ -72,4 +73,8 @@ exports.getActiveSince = function (date) {
 exports.getAll = function () {
     return dbHandler.initializeTable()
         .then(dbHandler.getAll);
+}
+
+exports.getAllDetails = function () {
+  return details.getAllDetailsSetly()
 }
